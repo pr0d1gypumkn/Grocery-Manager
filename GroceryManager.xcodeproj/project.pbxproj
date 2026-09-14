@@ -22,6 +22,8 @@
 		A10000000000000000000013 /* PantryMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* PantryMatcher.swift */; };
 		A10000000000000000000014 /* UnitConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* UnitConversion.swift */; };
 		A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* OnDeviceRecipeImporter.swift */; };
+		A10000000000000000000016 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* Persistence.swift */; };
+		A10000000000000000000017 /* GroceryAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* GroceryAppIntents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +46,8 @@
 		B10000000000000000000013 /* PantryMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryMatcher.swift; sourceTree = "<group>"; };
 		B10000000000000000000014 /* UnitConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversion.swift; sourceTree = "<group>"; };
 		B10000000000000000000015 /* OnDeviceRecipeImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceRecipeImporter.swift; sourceTree = "<group>"; };
+		B10000000000000000000016 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		B10000000000000000000017 /* GroceryAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAppIntents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +92,7 @@
 				7FE9140E30577FC200D172AD /* Info.plist */,
 				7FE9140B3057750200D172AD /* GroceryManager.entitlements */,
 				B10000000000000000000001 /* GroceryManagerApp.swift */,
+				B10000000000000000000016 /* Persistence.swift */,
 				D10000000000000000000003 /* Models */,
 				D10000000000000000000004 /* Views */,
 				D10000000000000000000005 /* ViewModels */,
@@ -141,6 +146,7 @@
 				B10000000000000000000013 /* PantryMatcher.swift */,
 				B10000000000000000000014 /* UnitConversion.swift */,
 				B10000000000000000000015 /* OnDeviceRecipeImporter.swift */,
+				B10000000000000000000017 /* GroceryAppIntents.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -258,6 +264,8 @@
 				A10000000000000000000013 /* PantryMatcher.swift in Sources */,
 				A10000000000000000000014 /* UnitConversion.swift in Sources */,
 				A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */,
+				A10000000000000000000016 /* Persistence.swift in Sources */,
+				A10000000000000000000017 /* GroceryAppIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,8 +315,8 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = " ";
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryMang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -335,8 +343,8 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = " ";
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryMang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -352,7 +360,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryManagerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -367,7 +375,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryManagerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
