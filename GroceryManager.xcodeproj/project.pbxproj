@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7FE9140A3057748800D172AD /* VisualIntelligence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FE914093057748800D172AD /* VisualIntelligence.framework */; };
 		7FE9140D30577B1A00D172AD /* Grocery Manager.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7FE9140C30577B1A00D172AD /* Grocery Manager.icon */; };
 		A10000000000000000000001 /* GroceryManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* GroceryManagerApp.swift */; };
 		A10000000000000000000002 /* GroceryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* GroceryModels.swift */; };
@@ -26,7 +25,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7FE914093057748800D172AD /* VisualIntelligence.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VisualIntelligence.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/VisualIntelligence.framework; sourceTree = DEVELOPER_DIR; };
 		7FE9140B3057750200D172AD /* GroceryManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GroceryManager.entitlements; sourceTree = "<group>"; };
 		7FE9140C30577B1A00D172AD /* Grocery Manager.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Grocery Manager.icon"; sourceTree = "<group>"; };
 		7FE9140E30577FC200D172AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -53,7 +51,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7FE9140A3057748800D172AD /* VisualIntelligence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +67,6 @@
 		7FE914083057748800D172AD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7FE914093057748800D172AD /* VisualIntelligence.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -297,7 +293,7 @@
 		F20000000000000000000002 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Grocery Manager";
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = "Grocery Manager";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = GroceryManager/GroceryManager.entitlements;
@@ -325,7 +321,7 @@
 		F20000000000000000000003 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Grocery Manager";
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = "Grocery Manager";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = GroceryManager/GroceryManager.entitlements;

@@ -130,12 +130,16 @@ struct RecipeImportView: View {
         let source: RecipeImportSource
         if sourceKind == .note {
             source = .note(sourceText)
-        } else if let url = URL(string: sourceText.trimmingCharacters(in: .whitespacesAndNewlines)) {
-            source = .url(url)
         } else {
-            errorMessage = RecipeImportError.invalidURL.localizedDescription
-            isImporting = false
-            return
+            let value = sourceText
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .trimmingCharacters(in: CharacterSet(charactersIn: "<>"))
+            guard let url = URL(string: value.hasPrefix("http") ? value : "https://\(value)") else {
+                errorMessage = RecipeImportError.invalidURL.localizedDescription
+                isImporting = false
+                return
+            }
+            source = .url(url)
         }
 
         Task {
@@ -297,6 +301,9 @@ struct RecipeFormView: View {
                         ForEach($ingredients) { $ingredient in
                             HStack {
                                 TextField("Ingredient", text: $ingredient.name)
+                                TextField("Amount", value: $ingredient.quantity, format: .number)
+                                    .keyboardType(.decimalPad)
+                                    .frame(width: 72)
                                 Stepper(value: $ingredient.quantity, in: 0...999, step: 0.5) {
                                     Text(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2))))
                                         .frame(minWidth: 32)

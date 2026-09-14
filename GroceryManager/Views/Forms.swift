@@ -78,12 +78,18 @@ struct IngredientFormView: View {
         NavigationStack {
             Form {
                 TextField("Name", text: $name)
+                TextField("Quantity", value: $quantity, format: .number)
+                    .keyboardType(.decimalPad)
                 Stepper(value: $quantity, in: 0...999, step: 0.5) {
                     LabeledContent("Quantity", value: quantity.formatted(.number.precision(.fractionLength(0...2))))
                 }
+                TextField("Starting quantity", value: $initialQuantity, format: .number)
+                    .keyboardType(.decimalPad)
                 Stepper(value: $initialQuantity, in: max(quantity, 0)...999, step: 0.5) {
                     LabeledContent("Starting quantity", value: initialQuantity.formatted(.number.precision(.fractionLength(0...2))))
                 }
+                TextField("Replenish below", value: $reorderThreshold, format: .number)
+                    .keyboardType(.decimalPad)
                 Stepper(value: $reorderThreshold, in: 0...999, step: 0.5) {
                     LabeledContent("Replenish below", value: reorderThreshold.formatted(.number.precision(.fractionLength(0...2))))
                 }

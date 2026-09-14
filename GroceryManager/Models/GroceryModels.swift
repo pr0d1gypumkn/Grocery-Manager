@@ -3,11 +3,23 @@ import SwiftData
 
 enum QuantityUnit: String, CaseIterable {
     case item = "item"
+    case dozen = "dozen"
     case grams = "g"
     case kilograms = "kg"
     case milliliters = "ml"
     case liters = "L"
     case ounces = "oz"
+    case pounds = "lb"
+    case fluidOunces = "fl oz"
+    case teaspoons = "tsp"
+    case tablespoons = "tbsp"
+    case cups = "cup"
+    case pints = "pt"
+    case quarts = "qt"
+    case gallons = "gal"
+    case pinches = "pinch"
+    case dashes = "dash"
+    case smidgens = "smidgen"
 }
 
 @Model
