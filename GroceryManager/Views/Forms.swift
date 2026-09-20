@@ -126,3 +126,62 @@ struct IngredientFormView: View {
         }
     }
 }
+struct GroceryFormView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    let groceries: GroceryItem?
+    @State private var name: String
+    @State private var quantity: Double
+    @State private var unit: String
+    @State private var category: String
+
+    private let categories = ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Beverages", "Other"]
+
+    init(groceries: GroceryItem? = nil) {
+        
+        self.groceries = groceries
+        _name = State(initialValue: groceries?.name ?? "")
+        _quantity = State(initialValue: groceries?.quantity ?? 1)
+        _unit = State(initialValue: groceries?.unit ?? "item")
+        _category = State(initialValue: groceries?.category ?? "Other")
+        
+        
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("Name", text: $name)
+                TextField("Quantity", value: $quantity, format: .number)
+                    .keyboardType(.decimalPad)
+                Stepper(value: $quantity, in: 0...999, step: 0.5) {
+                    LabeledContent("Quantity", value: quantity.formatted(.number.precision(.fractionLength(0...2))))
+                }
+                Picker("Unit", selection: $unit) {
+                    ForEach(QuantityUnit.allCases, id: \.self) { unit in
+                        Text(unit.rawValue).tag(unit.rawValue)
+                    }
+                }
+                .pickerStyle(.menu)
+                Picker("Category", selection: $category) {
+                    ForEach(categories, id: \.self, content: Text.init)
+                }
+                
+            }
+            .navigationTitle(groceries == nil ? "New Grocery Item" : "Edit Grocery Item")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        GroceryViewModel(modelContext: modelContext).saveGrocery(existing: groceries, name: name, quantity: quantity, unit: unit, category: category)
+                        dismiss()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+}

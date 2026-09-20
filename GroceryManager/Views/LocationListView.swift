@@ -1,6 +1,41 @@
 import SwiftData
 import SwiftUI
 
+enum LocationShelfLayout {
+    static let shelfCount = 3
+    static let itemsPerShelf = 2
+
+    static func rows(for ingredients: [Ingredient]) -> [[Ingredient?]] {
+        let sortedIngredients = ingredients.sorted {
+            $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+        }
+
+        var rows: [[Ingredient?]] = []
+        var currentRow: [Ingredient?] = []
+
+        for ingredient in sortedIngredients {
+            currentRow.append(ingredient)
+            if currentRow.count == itemsPerShelf {
+                rows.append(currentRow)
+                currentRow = []
+            }
+        }
+
+        if !currentRow.isEmpty {
+            while currentRow.count < itemsPerShelf {
+                currentRow.append(nil)
+            }
+            rows.append(currentRow)
+        }
+
+        while rows.count < shelfCount {
+            rows.append(Array(repeating: nil, count: itemsPerShelf))
+        }
+
+        return Array(rows.prefix(shelfCount))
+    }
+}
+
 struct LocationListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \StorageLocation.name) private var locations: [StorageLocation]
@@ -11,65 +46,82 @@ struct LocationListView: View {
         ingredients.filter { $0.location == nil }
     }
 
-    var body: some View {
-        List {
-            if locations.isEmpty && unassignedIngredients.isEmpty {
-                ContentUnavailableView("No storage locations", systemImage: "archivebox", description: Text("Create a fridge, pantry, or cabinet to organize groceries."))
-            } else {
-                ForEach(locations) { location in
-                    NavigationLink {
-                        LocationDetailView(location: location)
-                    } label: {
-                        Label {
-                            VStack(alignment: .leading) {
-                                Text(location.name)
-                                Text("\(location.ingredients.count) items")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        } icon: {
-                            Image(systemName: location.icon)
-                                .foregroundStyle(.tint)
-                        }
-                    }
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            modelContext.delete(location)
-                            try? modelContext.save()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                }
+    private func categoryIcon(for ingredient: Ingredient) -> String {
+        switch ingredient.category.lowercased() {
+        case "dairy":
+            return "drop.fill"
+        case "produce", "fruit", "vegetable":
+            return "leaf.fill"
+        case "meat", "protein":
+            return "fork.knife"
+        case "bakery", "grain", "pantry":
+            return "basket.fill"
+        case "seafood":
+            return "fish.fill"
+        default:
+            return "tag.fill"
+        }
+    }
 
-                if !unassignedIngredients.isEmpty {
-                    Section("Unassigned") {
-                        ForEach(unassignedIngredients) { ingredient in
-                            NavigationLink {
-                                IngredientFormView(ingredient: ingredient)
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: gridColumnCount), spacing: 16) {
+                if locations.isEmpty && unassignedIngredients.isEmpty {
+                    ContentUnavailableView("No storage locations", systemImage: "archivebox", description: Text("Create a fridge, pantry, or cabinet to organize groceries."))
+                        .frame(maxWidth: .infinity, minHeight: 200)
+                        .gridCellColumns(1)
+                        .gridCellUnsizedAxes(.horizontal)
+                } else {
+                    ForEach(locations) { location in
+                        NavigationLink {
+                            LocationDetailView(location: location)
+                        } label: {
+                            locationTile(for: location)
+                        }
+                        .buttonStyle(.plain)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                modelContext.delete(location)
+                                try? modelContext.save()
                             } label: {
-                                Label {
-                                    VStack(alignment: .leading) {
-                                        Text(ingredient.name)
-                                        Text("\(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2)))) \(ingredient.unit)")
-                                            .font(.caption)
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+
+                    if !unassignedIngredients.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Unassigned")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+
+                            ForEach(unassignedIngredients) { ingredient in
+                                NavigationLink {
+                                    IngredientFormView(ingredient: ingredient)
+                                } label: {
+                                    HStack {
+                                        Image(systemName: "questionmark.folder")
                                             .foregroundStyle(.secondary)
+                                        VStack(alignment: .leading) {
+                                            Text(ingredient.name)
+                                            Text("\(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2)))) \(ingredient.unit)")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        Spacer()
                                     }
-                                } icon: {
-                                    Image(systemName: "questionmark.folder")
-                                        .foregroundStyle(.secondary)
+                                    .padding(10)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
-                        .onDelete { offsets in
-                            offsets.map { unassignedIngredients[$0] }.forEach { ingredient in
-                                modelContext.delete(ingredient)
-                            }
-                            try? modelContext.save()
-                        }
+                        .gridCellColumns(1)
                     }
                 }
             }
+            .padding()
         }
         .navigationTitle("Storage")
         .toolbar {
@@ -84,6 +136,88 @@ struct LocationListView: View {
         .sheet(isPresented: $showingAddLocation) {
             LocationFormView()
         }
+    }
+
+    private var gridColumnCount: Int {
+        #if os(iOS)
+        return UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1
+        #else
+        return 1
+        #endif
+    }
+
+    @ViewBuilder
+    private func locationTile(for location: StorageLocation) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .center) {
+                Image(systemName: location.icon)
+                    .font(.headline)
+                    .foregroundStyle(.tint)
+                Text(location.name)
+                    .font(.title3.weight(.semibold))
+                Spacer()
+                Text("\(location.ingredients.count) items")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            let shelves = LocationShelfLayout.rows(for: location.ingredients)
+
+            VStack(spacing: 8) {
+                ForEach(0..<LocationShelfLayout.shelfCount, id: \.self) { rowIndex in
+                    let rowItems = shelves.indices.contains(rowIndex) ? shelves[rowIndex] : Array(repeating: nil as Ingredient?, count: LocationShelfLayout.itemsPerShelf)
+
+                    HStack(spacing: 8) {
+                        ForEach(0..<LocationShelfLayout.itemsPerShelf, id: \.self) { itemIndex in
+                            if itemIndex < rowItems.count, let ingredient = rowItems[itemIndex] {
+                                shelfItemView(for: ingredient)
+                            } else {
+                                emptyShelfSlot()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, minHeight: 220, alignment: .leading)
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color(.separator), lineWidth: 1)
+        )
+    }
+
+    private func shelfItemView(for ingredient: Ingredient) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: categoryIcon(for: ingredient))
+                    .font(.caption2)
+                    .foregroundStyle(.tint)
+                Text(ingredient.name)
+                    .font(.caption.weight(.semibold))
+                    .lineLimit(1)
+            }
+            Text("\(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2)))) \(ingredient.unit)")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
+        .background(.white.opacity(0.35), in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func emptyShelfSlot() -> some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.clear)
+            .frame(maxWidth: .infinity, minHeight: 58)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [5, 5]))
+                    .foregroundStyle(.secondary.opacity(0.5))
+            )
     }
 }
 

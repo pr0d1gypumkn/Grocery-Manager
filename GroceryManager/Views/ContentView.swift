@@ -23,6 +23,13 @@ struct ContentView: View {
             .tabItem {
                 Label("Recipes", systemImage: "book")
             }
+            
+            NavigationStack {
+                GroceryListView()
+            }
+            .tabItem {
+                Label("Groceries", systemImage: "list.bullet")
+            }
         }
     }
 }

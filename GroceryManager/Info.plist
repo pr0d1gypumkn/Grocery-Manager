@@ -4,7 +4,35 @@
 <dict>
 	<key>INIntentsSupported</key>
 	<array>
-		<string>Intent</string>
+		<string>CheckRecipesIntent</string>
+	</array>
+	<key>NSAppGroups</key>
+	<array>
+		<string>group.com.example.grocerymanager</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<array>
+		<dict>
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>localhost</key>
+				<dict>
+					<key>NSExceptionAllowsInsecureHTTPLoads</key>
+					<true/>
+				</dict>
+			</dict>
+		</dict>
+	</array>
+	<key>NSApplicationSupportsAppTransportSecurity</key>
+	<true/>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>AddStorageLocationIntent</string>
+		<string>RemoveStorageLocationIntent</string>
+		<string>AddIngredientIntent</string>
+		<string>RemoveIngredientIntent</string>
+		<string>AddRecipeIntent</string>
+		<string>RemoveRecipeIntent</string>
 	</array>
 </dict>
 </plist>

@@ -60,6 +60,34 @@ struct RecipeListView: View {
     }
 }
 
+struct RecipeSnippetView: View {
+    // Pass the fetched entities directly from the Intent
+    let recipes: [RecipeEntity]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if recipes.isEmpty {
+                Label("No recipes found.", systemImage: "book")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .padding()
+            } else {
+                // Use a standard VStack or ForEach instead of a List/NavigationLink
+                ForEach(recipes, id: \.id) { recipe in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(recipe.name) // Use whatever display properties are on your Entity
+                            .font(.headline)
+                        
+                        Divider()
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+        }
+        .padding()
+    }
+}
+
 struct RecipeImportView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext

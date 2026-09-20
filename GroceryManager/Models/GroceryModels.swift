@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import AppIntents
 
 enum QuantityUnit: String, CaseIterable {
     case item = "item"
@@ -35,6 +36,29 @@ final class StorageLocation {
         self.icon = icon
     }
 }
+
+//struct StorageLocationEntity: AppEntity, Sendable {
+//    let id: UUID
+//    
+//    @Property(title: "Add storage location")
+//    var title: String
+//    
+//    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Storage Location"
+//    
+//    var displayRepresentation: DisplayRepresentation {
+//        DisplayRepresentation(title: "\(title)")
+//    }
+//    
+//    static var defaultQuery: StorageLocationEntityQuery()
+//        
+//        
+//}
+//
+//struct StorageLocationEntityQuery: EntityQuery, Sendable {
+//    func entities(for identifiers: [UUID]) async throws -> [StorageLocationEntity] {
+//        <#code#>
+//    }
+//}
 
 @Model
 final class Ingredient {
@@ -84,6 +108,21 @@ final class Recipe {
 }
 
 @Model
+final class GroceryItem {
+    @Attribute(.unique) var name: String
+    var quantity: Double
+    var unit: String = "item"
+    var category: String = "Other"
+   
+    init(name: String, quantity: Double, unit: String, category: String? = nil) {
+        self.name = name
+        self.quantity = quantity
+        self.unit = unit
+        self.category = category ?? "Other"
+    }
+}
+
+@Model
 final class RecipeIngredient {
     var name: String
     var requiredQuantity: Double
@@ -97,3 +136,4 @@ final class RecipeIngredient {
         self.recipe = recipe
     }
 }
+

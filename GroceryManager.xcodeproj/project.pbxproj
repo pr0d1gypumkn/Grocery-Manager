@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		7FE9140D30577B1A00D172AD /* Grocery Manager.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7FE9140C30577B1A00D172AD /* Grocery Manager.icon */; };
+		7FF4C56E3059281C00D0FAA7 /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF4C56D3059281400D0FAA7 /* GroceryListView.swift */; };
+		7FF4C570305B828D00D0FAA7 /* Untitled 8.svg in Resources */ = {isa = PBXBuildFile; fileRef = 7FF4C56F305B828D00D0FAA7 /* Untitled 8.svg */; };
+		7FF4C572305F098300D0FAA7 /* GroceryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF4C571305F098300D0FAA7 /* GroceryViewModel.swift */; };
 		A10000000000000000000001 /* GroceryManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* GroceryManagerApp.swift */; };
 		A10000000000000000000002 /* GroceryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* GroceryModels.swift */; };
 		A10000000000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* ContentView.swift */; };
@@ -24,12 +27,18 @@
 		A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* OnDeviceRecipeImporter.swift */; };
 		A10000000000000000000016 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* Persistence.swift */; };
 		A10000000000000000000017 /* GroceryAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* GroceryAppIntents.swift */; };
+		A10000000000000000000018 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* LaunchScreenView.swift */; };
+		A10000000000000000000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A10000000000000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7FE9140B3057750200D172AD /* GroceryManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GroceryManager.entitlements; sourceTree = "<group>"; };
 		7FE9140C30577B1A00D172AD /* Grocery Manager.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Grocery Manager.icon"; sourceTree = "<group>"; };
 		7FE9140E30577FC200D172AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7FF4C56D3059281400D0FAA7 /* GroceryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
+		7FF4C56F305B828D00D0FAA7 /* Untitled 8.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Untitled 8.svg"; sourceTree = "<group>"; };
+		7FF4C571305F098300D0FAA7 /* GroceryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryViewModel.swift; sourceTree = "<group>"; };
+		8A10000000000000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000000 /* GroceryManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GroceryManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10000000000000000000001 /* GroceryManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryManagerApp.swift; sourceTree = "<group>"; };
 		B10000000000000000000002 /* GroceryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryModels.swift; sourceTree = "<group>"; };
@@ -48,6 +57,7 @@
 		B10000000000000000000015 /* OnDeviceRecipeImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceRecipeImporter.swift; sourceTree = "<group>"; };
 		B10000000000000000000016 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		B10000000000000000000017 /* GroceryAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAppIntents.swift; sourceTree = "<group>"; };
+		B10000000000000000000018 /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +88,7 @@
 		D10000000000000000000000 = {
 			isa = PBXGroup;
 			children = (
+				7FF4C56F305B828D00D0FAA7 /* Untitled 8.svg */,
 				7FE9140C30577B1A00D172AD /* Grocery Manager.icon */,
 				D10000000000000000000001 /* GroceryManager */,
 				D10000000000000000000007 /* GroceryManagerTests */,
@@ -93,6 +104,8 @@
 				7FE9140B3057750200D172AD /* GroceryManager.entitlements */,
 				B10000000000000000000001 /* GroceryManagerApp.swift */,
 				B10000000000000000000016 /* Persistence.swift */,
+				B10000000000000000000018 /* LaunchScreenView.swift */,
+				8A10000000000000000000001 /* Assets.xcassets */,
 				D10000000000000000000003 /* Models */,
 				D10000000000000000000004 /* Views */,
 				D10000000000000000000005 /* ViewModels */,
@@ -123,6 +136,7 @@
 			children = (
 				B10000000000000000000003 /* ContentView.swift */,
 				B10000000000000000000005 /* InventoryDashboardView.swift */,
+				7FF4C56D3059281400D0FAA7 /* GroceryListView.swift */,
 				B10000000000000000000006 /* LocationListView.swift */,
 				B10000000000000000000007 /* Forms.swift */,
 				B10000000000000000000012 /* RecipeViews.swift */,
@@ -133,6 +147,7 @@
 		D10000000000000000000005 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				7FF4C571305F098300D0FAA7 /* GroceryViewModel.swift */,
 				B10000000000000000000004 /* InventoryViewModel.swift */,
 				B10000000000000000000011 /* RecipeViewModel.swift */,
 			);
@@ -234,6 +249,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7FE9140D30577B1A00D172AD /* Grocery Manager.icon in Resources */,
+				7FF4C570305B828D00D0FAA7 /* Untitled 8.svg in Resources */,
+				A10000000000000000000019 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +270,8 @@
 			files = (
 				A10000000000000000000001 /* GroceryManagerApp.swift in Sources */,
 				A10000000000000000000002 /* GroceryModels.swift in Sources */,
+				7FF4C56E3059281C00D0FAA7 /* GroceryListView.swift in Sources */,
+				7FF4C572305F098300D0FAA7 /* GroceryViewModel.swift in Sources */,
 				A10000000000000000000003 /* ContentView.swift in Sources */,
 				A10000000000000000000004 /* InventoryViewModel.swift in Sources */,
 				A10000000000000000000005 /* InventoryDashboardView.swift in Sources */,
@@ -266,6 +285,7 @@
 				A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */,
 				A10000000000000000000016 /* Persistence.swift in Sources */,
 				A10000000000000000000017 /* GroceryAppIntents.swift in Sources */,
+				A10000000000000000000018 /* LaunchScreenView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,8 +336,8 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = " ";
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryMang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -344,8 +364,8 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = " ";
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryMang;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

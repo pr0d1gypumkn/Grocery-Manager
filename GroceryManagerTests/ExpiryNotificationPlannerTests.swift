@@ -38,4 +38,45 @@ final class ExpiryNotificationPlannerTests: XCTestCase {
         XCTAssertTrue(plans[1].body.contains("Bread"))
         XCTAssertLessThan(plans[0].date, plans[1].date)
     }
+
+    func testStorageLocationShelfRowsFillTwoItemsPerShelf() {
+        let ingredients = [
+            Ingredient(name: "Milk", category: "Dairy"),
+            Ingredient(name: "Eggs", category: "Dairy"),
+            Ingredient(name: "Tomatoes", category: "Produce"),
+            Ingredient(name: "Cereal", category: "Pantry"),
+            Ingredient(name: "Yogurt", category: "Dairy"),
+            Ingredient(name: "Spinach", category: "Produce")
+        ]
+
+        let rows = LocationShelfLayout.rows(for: ingredients)
+
+        XCTAssertEqual(rows.count, 3)
+        XCTAssertEqual(rows[0].count, 2)
+        XCTAssertEqual(rows[0][0]?.name, "Milk")
+        XCTAssertEqual(rows[0][1]?.name, "Eggs")
+        XCTAssertEqual(rows[1][0]?.name, "Tomatoes")
+        XCTAssertEqual(rows[1][1]?.name, "Cereal")
+        XCTAssertEqual(rows[2][0]?.name, "Yogurt")
+        XCTAssertEqual(rows[2][1]?.name, "Spinach")
+    }
+
+    func testStorageLocationShelfRowsPadShortRowsToTwoSlots() {
+        let ingredients = [Ingredient(name: "Milk", category: "Dairy")]
+
+        let rows = LocationShelfLayout.rows(for: ingredients)
+
+        XCTAssertEqual(rows.count, 3)
+        XCTAssertEqual(rows[0].count, 2)
+        XCTAssertEqual(rows[0][0]?.name, "Milk")
+        XCTAssertNil(rows[0][1])
+        XCTAssertNil(rows[1][0])
+        XCTAssertNil(rows[2][1])
+    }
+
+    func testPersistenceUsesCloudKitSyncConfiguration() {
+        let configuration = PersistenceController.makeConfiguration()
+
+        XCTAssertEqual(configuration.cloudKitDatabase, .automatic)
+    }
 }
