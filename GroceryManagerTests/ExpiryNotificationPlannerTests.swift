@@ -53,12 +53,13 @@ final class ExpiryNotificationPlannerTests: XCTestCase {
 
         XCTAssertEqual(rows.count, 3)
         XCTAssertEqual(rows[0].count, 2)
-        XCTAssertEqual(rows[0][0]?.name, "Milk")
+        // Shelves are filled alphabetically, since SwiftData doesn't preserve relationship order.
+        XCTAssertEqual(rows[0][0]?.name, "Cereal")
         XCTAssertEqual(rows[0][1]?.name, "Eggs")
-        XCTAssertEqual(rows[1][0]?.name, "Tomatoes")
-        XCTAssertEqual(rows[1][1]?.name, "Cereal")
-        XCTAssertEqual(rows[2][0]?.name, "Yogurt")
-        XCTAssertEqual(rows[2][1]?.name, "Spinach")
+        XCTAssertEqual(rows[1][0]?.name, "Milk")
+        XCTAssertEqual(rows[1][1]?.name, "Spinach")
+        XCTAssertEqual(rows[2][0]?.name, "Tomatoes")
+        XCTAssertEqual(rows[2][1]?.name, "Yogurt")
     }
 
     func testStorageLocationShelfRowsPadShortRowsToTwoSlots() {
@@ -77,6 +78,7 @@ final class ExpiryNotificationPlannerTests: XCTestCase {
     func testPersistenceUsesCloudKitSyncConfiguration() {
         let configuration = PersistenceController.makeConfiguration()
 
-        XCTAssertEqual(configuration.cloudKitDatabase, .automatic)
+        // CloudKitDatabase isn't Equatable, so check the container it resolves to.
+        XCTAssertEqual(configuration.cloudKitContainerIdentifier, PersistenceController.cloudKitContainerID)
     }
 }

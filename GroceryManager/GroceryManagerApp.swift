@@ -13,16 +13,29 @@ struct GroceryManagerApp: App {
                     .opacity(isLaunching ? 0 : 1)
                     .animation(.easeInOut(duration: 0.6), value: isLaunching)
 
-                LaunchScreenView()
+                LaunchScreenView { isLaunching = false }
                     .opacity(isLaunching ? 1 : 0)
+                    .scaleEffect(isLaunching ? 1 : 1.08)
                     .animation(.easeInOut(duration: 0.6), value: isLaunching)
+                    .allowsHitTesting(isLaunching)
             }
             .task {
-                try? await Task.sleep(for: .seconds(1.5))
-                isLaunching = false
+                seedDemoDataIfNeeded()
+                await EntitlementService.shared.refresh()
+                await IntentStore.refreshSiriIndex()
             }
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    /// First launch on an empty store: load the demo so the whole loop can be tried at once.
+    @MainActor
+    private func seedDemoDataIfNeeded() {
+        let settings = AppSettings.shared
+        let context = sharedModelContainer.mainContext
+        guard !settings.didSeedDemoData, DemoData.isEmpty(context) else { return }
+        DemoData.load(into: context)
+        settings.didSeedDemoData = true
     }
 }
 

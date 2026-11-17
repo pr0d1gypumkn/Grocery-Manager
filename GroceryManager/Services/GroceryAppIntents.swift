@@ -26,6 +26,10 @@ struct AddStorageLocationIntent: AppIntent {
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let context = GroceryManagerIntentStore.context()
+        let existing = try context.fetch(FetchDescriptor<StorageLocation>())
+        if existing.contains(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) {
+            return .result(dialog: "You already have a \(name) storage location.")
+        }
         context.insert(StorageLocation(name: name, icon: icon))
         try context.save()
         return .result(dialog: "Added the \(name) storage location.")
@@ -146,6 +150,10 @@ struct AddRecipeIntent: AppIntent {
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let context = GroceryManagerIntentStore.context()
+        let existing = try context.fetch(FetchDescriptor<Recipe>())
+        if existing.contains(where: { $0.name.localizedCaseInsensitiveCompare(name) == .orderedSame }) {
+            return .result(dialog: "You already have a recipe called \(name).")
+        }
         context.insert(Recipe(name: name, instructions: instructions))
         try context.save()
         return .result(dialog: "Added the \(name) recipe.")
@@ -178,7 +186,7 @@ struct RemoveRecipeIntent: AppIntent {
 }
 
 
-struct RecipeEntity: AppEntity {
+struct RecipeEntity: IndexedEntity {
     
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "Recipe"
     static var defaultQuery = RecipeQuery()
@@ -212,7 +220,8 @@ struct RecipeEntity: AppEntity {
     }
 }
 
-struct RecipeQuery: EntityQuery {
+/// `EntityStringQuery` (not plain `EntityQuery`) so Siri can resolve a spoken recipe name.
+struct RecipeQuery: EntityStringQuery {
     
     // Helps Apple Intelligence search or autocomplete recipes by name string
     @MainActor
@@ -310,32 +319,109 @@ enum IntentError: LocalizedError {
     }
 }
 
+/// App Shortcuts work with Siri as soon as the app is installed — no setup.
+/// Apple allows at most 10, so these cover everyday voice tasks. Every other intent
+/// (storage locations, adding/removing recipes, etc.) is still available to Siri and
+/// in the Shortcuts app; it just doesn't have its own fixed phrase.
 struct GroceryManagerShortcuts: AppShortcutsProvider {
+    static let shortcutTileColor: ShortcutTileColor = .orange
+
     @AppShortcutsBuilder
     static var appShortcuts: [AppShortcut] {
-        AppShortcut(intent: AddStorageLocationIntent(), phrases: [AppShortcutPhrase<AddStorageLocationIntent>("Add a storage location in \(.applicationName)")], shortTitle: LocalizedStringResource("Add Location"), systemImageName: "archivebox.badge.plus")
-        AppShortcut(intent: RemoveStorageLocationIntent(), phrases: [AppShortcutPhrase<RemoveStorageLocationIntent>("Remove a storage location in \(.applicationName)")], shortTitle: LocalizedStringResource("Remove Location"), systemImageName: "archivebox.badge.minus")
-        AppShortcut(intent: AddIngredientIntent(), phrases: [AppShortcutPhrase<AddIngredientIntent>("Add a grocery item in \(.applicationName)")], shortTitle: LocalizedStringResource("Add Grocery"), systemImageName: "cart.badge.plus")
-        AppShortcut(intent: RemoveIngredientIntent(), phrases: [AppShortcutPhrase<RemoveIngredientIntent>("Remove a grocery item in \(.applicationName)")], shortTitle: LocalizedStringResource("Remove Grocery"), systemImageName: "cart.badge.minus")
-        AppShortcut(intent: AddRecipeIntent(), phrases: [AppShortcutPhrase<AddRecipeIntent>("Add a recipe in \(.applicationName)")], shortTitle: LocalizedStringResource("Add Recipe"), systemImageName: "book.pages")
-        AppShortcut(intent: RemoveRecipeIntent(), phrases: [AppShortcutPhrase<RemoveRecipeIntent>("Remove a recipe in \(.applicationName)")], shortTitle: LocalizedStringResource("Remove Recipe"), systemImageName: "book.pages.fill")
         AppShortcut(
-            intent: CheckRecipeIngredientsIntent(),
+            intent: MealPlanForDayIntent(),
             phrases: [
-                "Check ingredients for \(.applicationName)",
-                "What do I need for a recipe in \(.applicationName)",
-                "Look up recipe ingredients with \(.applicationName)"
+                "What's for dinner in \(.applicationName)",
+                "What's on my meal plan in \(.applicationName)",
+                "What am I eating today in \(.applicationName)",
+                "\(.applicationName) meal plan"
             ],
-            shortTitle: "Check Recipe Ingredients",
+            shortTitle: "Today's Meals",
+            systemImageName: "calendar"
+        )
+        AppShortcut(
+            intent: PlanMealIntent(),
+            phrases: [
+                "Plan \(\.$recipe) in \(.applicationName)",
+                "Add \(\.$recipe) to my meal plan in \(.applicationName)",
+                "Plan a meal in \(.applicationName)"
+            ],
+            shortTitle: "Plan a Meal",
+            systemImageName: "calendar.badge.plus"
+        )
+        AppShortcut(
+            intent: CookMealIntent(),
+            phrases: [
+                "I cooked \(\.$meal) in \(.applicationName)",
+                "Mark a meal as cooked in \(.applicationName)"
+            ],
+            shortTitle: "Cook Meal",
+            systemImageName: "frying.pan"
+        )
+        AppShortcut(
+            intent: ShopForMealPlanIntent(),
+            phrases: [
+                "Shop for my meal plan in \(.applicationName)",
+                "Add missing ingredients to my list in \(.applicationName)"
+            ],
+            shortTitle: "Shop for Meal Plan",
+            systemImageName: "cart.badge.plus"
+        )
+        AppShortcut(
+            intent: AddToGroceryListIntent(),
+            phrases: [
+                "Add to my grocery list in \(.applicationName)",
+                "Add to my shopping list in \(.applicationName)"
+            ],
+            shortTitle: "Add to List",
+            systemImageName: "text.badge.plus"
+        )
+        AppShortcut(
+            intent: ReadGroceryListIntent(),
+            phrases: [
+                "What's on my grocery list in \(.applicationName)",
+                "Read my shopping list in \(.applicationName)"
+            ],
+            shortTitle: "Grocery List",
+            systemImageName: "list.bullet"
+        )
+        AppShortcut(
+            intent: CheckStockIntent(),
+            phrases: [
+                "How much \(\.$item) do I have in \(.applicationName)",
+                "Check my \(\.$item) in \(.applicationName)",
+                "Check stock in \(.applicationName)"
+            ],
+            shortTitle: "Check Stock",
+            systemImageName: "shippingbox"
+        )
+        AppShortcut(
+            intent: UseStockIntent(),
+            phrases: [
+                "I used \(\.$item) in \(.applicationName)",
+                "Use some \(\.$item) in \(.applicationName)",
+                "Log what I used in \(.applicationName)"
+            ],
+            shortTitle: "Use Stock",
+            systemImageName: "minus.circle"
+        )
+        AppShortcut(
+            intent: ExpiringSoonIntent(),
+            phrases: [
+                "What's expiring in \(.applicationName)",
+                "What should I use up in \(.applicationName)"
+            ],
+            shortTitle: "Expiring Soon",
+            systemImageName: "clock.badge.exclamationmark"
+        )
+        AppShortcut(
+            intent: WhatCanICookIntent(),
+            phrases: [
+                "What can I cook in \(.applicationName)",
+                "What can I make in \(.applicationName)"
+            ],
+            shortTitle: "What Can I Cook",
             systemImageName: "fork.knife"
         )
-        AppShortcut(intent: CheckRecipesIntent(),
-                    phrases: [
-                        AppShortcutPhrase<CheckRecipesIntent>("Check recipes in \(.applicationName)"),
-                        AppShortcutPhrase<CheckRecipesIntent>("What recipes are available in \(.applicationName)")
-                    ],
-                    shortTitle: LocalizedStringResource("Check Recipes"),
-                    systemImageName: "book.pages")
     }
 }
-

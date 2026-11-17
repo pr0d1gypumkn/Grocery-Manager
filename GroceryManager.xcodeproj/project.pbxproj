@@ -7,6 +7,44 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A795C39842009DA032607D65 /* PlusFeatureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F795C39842009DA032607D65 /* PlusFeatureTests.swift */; };
+		A7330A850402C48B377321A0 /* AutoPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7330A850402C48B377321A0 /* AutoPlanView.swift */; };
+		A7C280736E823EEBD42331E1 /* HouseholdSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C280736E823EEBD42331E1 /* HouseholdSync.swift */; };
+		A72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift */; };
+		A7CB2E17E61C6E072F2563B4 /* CheckoutProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CB2E17E61C6E072F2563B4 /* CheckoutProviders.swift */; };
+		A75138FBDFC2419B59C15790 /* RecipeSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75138FBDFC2419B59C15790 /* RecipeSuggestions.swift */; };
+		A73A5094C96DE0207485C250 /* AutoPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73A5094C96DE0207485C250 /* AutoPlanner.swift */; };
+		A7DBDBC041D069BC38B3AECB /* PriceSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DBDBC041D069BC38B3AECB /* PriceSource.swift */; };
+		A79CA0776D31E67E4CC2B000 /* DataTransferTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79CA0776D31E67E4CC2B000 /* DataTransferTests.swift */; };
+		A7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift */; };
+		A7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift */; };
+		A7C58AFA2C6293FE34312179 /* EntitlementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C58AFA2C6293FE34312179 /* EntitlementTests.swift */; };
+		A78C4F827A4514767FEAB90C /* PantryDeductionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78C4F827A4514767FEAB90C /* PantryDeductionTests.swift */; };
+		A7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift */; };
+		A718D1B145E8A7490210D79D /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718D1B145E8A7490210D79D /* UnitConversionTests.swift */; };
+		A71DC34DABC5A10A4A774A3E /* PrepSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71DC34DABC5A10A4A774A3E /* PrepSessionView.swift */; };
+		A79BA043D70D3B38BB149911 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79BA043D70D3B38BB149911 /* SettingsView.swift */; };
+		A7FDFCC77D22D711873203FE /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFCC77D22D711873203FE /* PaywallView.swift */; };
+		A7F36F5726AB8274F2C50400 /* SeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F36F5726AB8274F2C50400 /* SeedData.swift */; };
+		A7D300378D5EDDAA69C6F2D3 /* DataTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D300378D5EDDAA69C6F2D3 /* DataTransfer.swift */; };
+		A7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift */; };
+		A7697E5D156910668560C5A0 /* UseItUpSuggester.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7697E5D156910668560C5A0 /* UseItUpSuggester.swift */; };
+		A7969CC36010AD6FBDEFC588 /* Nutrition.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7969CC36010AD6FBDEFC588 /* Nutrition.swift */; };
+		A750B414694415CC1B2379D8 /* RecipeImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F750B414694415CC1B2379D8 /* RecipeImport.swift */; };
+		A74874A5BFC9FF60A5D9BE50 /* RecipeSchemaParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74874A5BFC9FF60A5D9BE50 /* RecipeSchemaParser.swift */; };
+		A77207D3A80C6B4E33C2D7D8 /* IngredientLineParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77207D3A80C6B4E33C2D7D8 /* IngredientLineParser.swift */; };
+		A77F8EF8E48B98C4FEA98298 /* GroceryListBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77F8EF8E48B98C4FEA98298 /* GroceryListBuilder.swift */; };
+		A7ED6C01D7C38373B2228C4C /* GroceryCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ED6C01D7C38373B2228C4C /* GroceryCatalog.swift */; };
+		A7C8341A57E34E039BBBD362 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C8341A57E34E039BBBD362 /* AppSettings.swift */; };
+		A79A4D860CE3AA4FD97DF8E2 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A4D860CE3AA4FD97DF8E2 /* APIClient.swift */; };
+		A74409AB1D570BA4AA33A789 /* SubscriptionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74409AB1D570BA4AA33A789 /* SubscriptionStore.swift */; };
+		A7B51A5D602B561D11921259 /* Entitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B51A5D602B561D11921259 /* Entitlements.swift */; };
+		A72F6ADA96064FEE730512A5 /* HouseholdModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72F6ADA96064FEE730512A5 /* HouseholdModels.swift */; };
+		A78FD90A2A56F7485FF8AE48 /* PrepModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78FD90A2A56F7485FF8AE48 /* PrepModels.swift */; };
+		A10000000000000000000020 /* MealPrepPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* MealPrepPlannerTests.swift */; };
+		A1000000000000000000001F /* MealPrepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* MealPrepView.swift */; };
+		A1000000000000000000001E /* MealPrepPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* MealPrepPlanner.swift */; };
+		7F308F97305FAF3F00975FA9 /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = 7F308F96305FAF3500975FA9 /* AGENTS.md */; };
 		7FE9140D30577B1A00D172AD /* Grocery Manager.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7FE9140C30577B1A00D172AD /* Grocery Manager.icon */; };
 		7FF4C56E3059281C00D0FAA7 /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF4C56D3059281400D0FAA7 /* GroceryListView.swift */; };
 		7FF4C570305B828D00D0FAA7 /* Untitled 8.svg in Resources */ = {isa = PBXBuildFile; fileRef = 7FF4C56F305B828D00D0FAA7 /* Untitled 8.svg */; };
@@ -29,9 +67,52 @@
 		A10000000000000000000017 /* GroceryAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000017 /* GroceryAppIntents.swift */; };
 		A10000000000000000000018 /* LaunchScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000018 /* LaunchScreenView.swift */; };
 		A10000000000000000000019 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A10000000000000000000001 /* Assets.xcassets */; };
+		A1000000000000000000001A /* MealPlanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001A /* MealPlanViewModel.swift */; };
+		A1000000000000000000001B /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001B /* MealPlanView.swift */; };
+		A1000000000000000000001C /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001C /* DesignSystem.swift */; };
+		A1000000000000000000001D /* SiriIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001D /* SiriIntents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F795C39842009DA032607D65 /* PlusFeatureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusFeatureTests.swift; sourceTree = "<group>"; };
+		F7330A850402C48B377321A0 /* AutoPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPlanView.swift; sourceTree = "<group>"; };
+		F7C280736E823EEBD42331E1 /* HouseholdSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdSync.swift; sourceTree = "<group>"; };
+		F72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialRecipeImporter.swift; sourceTree = "<group>"; };
+		F7CB2E17E61C6E072F2563B4 /* CheckoutProviders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutProviders.swift; sourceTree = "<group>"; };
+		F75138FBDFC2419B59C15790 /* RecipeSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSuggestions.swift; sourceTree = "<group>"; };
+		F73A5094C96DE0207485C250 /* AutoPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPlanner.swift; sourceTree = "<group>"; };
+		F7DBDBC041D069BC38B3AECB /* PriceSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceSource.swift; sourceTree = "<group>"; };
+		F7000000000000000000SK01 /* Mealy.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Mealy.storekit; sourceTree = "<group>"; };
+		F79CA0776D31E67E4CC2B000 /* DataTransferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTransferTests.swift; sourceTree = "<group>"; };
+		F7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepSessionPlannerTests.swift; sourceTree = "<group>"; };
+		F7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeImportTests.swift; sourceTree = "<group>"; };
+		F7C58AFA2C6293FE34312179 /* EntitlementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntitlementTests.swift; sourceTree = "<group>"; };
+		F78C4F827A4514767FEAB90C /* PantryDeductionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryDeductionTests.swift; sourceTree = "<group>"; };
+		F7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientMergingTests.swift; sourceTree = "<group>"; };
+		F718D1B145E8A7490210D79D /* UnitConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversionTests.swift; sourceTree = "<group>"; };
+		F71DC34DABC5A10A4A774A3E /* PrepSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepSessionView.swift; sourceTree = "<group>"; };
+		F79BA043D70D3B38BB149911 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F7FDFCC77D22D711873203FE /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		F7F36F5726AB8274F2C50400 /* SeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedData.swift; sourceTree = "<group>"; };
+		F7D300378D5EDDAA69C6F2D3 /* DataTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTransfer.swift; sourceTree = "<group>"; };
+		F7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepSessionPlanner.swift; sourceTree = "<group>"; };
+		F7697E5D156910668560C5A0 /* UseItUpSuggester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseItUpSuggester.swift; sourceTree = "<group>"; };
+		F7969CC36010AD6FBDEFC588 /* Nutrition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nutrition.swift; sourceTree = "<group>"; };
+		F750B414694415CC1B2379D8 /* RecipeImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeImport.swift; sourceTree = "<group>"; };
+		F74874A5BFC9FF60A5D9BE50 /* RecipeSchemaParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSchemaParser.swift; sourceTree = "<group>"; };
+		F77207D3A80C6B4E33C2D7D8 /* IngredientLineParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientLineParser.swift; sourceTree = "<group>"; };
+		F77F8EF8E48B98C4FEA98298 /* GroceryListBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListBuilder.swift; sourceTree = "<group>"; };
+		F7ED6C01D7C38373B2228C4C /* GroceryCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryCatalog.swift; sourceTree = "<group>"; };
+		F7C8341A57E34E039BBBD362 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		F79A4D860CE3AA4FD97DF8E2 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		F74409AB1D570BA4AA33A789 /* SubscriptionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionStore.swift; sourceTree = "<group>"; };
+		F7B51A5D602B561D11921259 /* Entitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entitlements.swift; sourceTree = "<group>"; };
+		F72F6ADA96064FEE730512A5 /* HouseholdModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdModels.swift; sourceTree = "<group>"; };
+		F78FD90A2A56F7485FF8AE48 /* PrepModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepModels.swift; sourceTree = "<group>"; };
+		B10000000000000000000020 /* MealPrepPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPrepPlannerTests.swift; sourceTree = "<group>"; };
+		B1000000000000000000001F /* MealPrepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPrepView.swift; sourceTree = "<group>"; };
+		B1000000000000000000001E /* MealPrepPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPrepPlanner.swift; sourceTree = "<group>"; };
+		7F308F96305FAF3500975FA9 /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
 		7FE9140B3057750200D172AD /* GroceryManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GroceryManager.entitlements; sourceTree = "<group>"; };
 		7FE9140C30577B1A00D172AD /* Grocery Manager.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = "Grocery Manager.icon"; sourceTree = "<group>"; };
 		7FE9140E30577FC200D172AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -58,6 +139,10 @@
 		B10000000000000000000016 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		B10000000000000000000017 /* GroceryAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryAppIntents.swift; sourceTree = "<group>"; };
 		B10000000000000000000018 /* LaunchScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenView.swift; sourceTree = "<group>"; };
+		B1000000000000000000001A /* MealPlanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanViewModel.swift; sourceTree = "<group>"; };
+		B1000000000000000000001B /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
+		B1000000000000000000001C /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		B1000000000000000000001D /* SiriIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriIntents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +173,7 @@
 		D10000000000000000000000 = {
 			isa = PBXGroup;
 			children = (
+				7F308F96305FAF3500975FA9 /* AGENTS.md */,
 				7FF4C56F305B828D00D0FAA7 /* Untitled 8.svg */,
 				7FE9140C30577B1A00D172AD /* Grocery Manager.icon */,
 				D10000000000000000000001 /* GroceryManager */,
@@ -101,6 +187,7 @@
 			isa = PBXGroup;
 			children = (
 				7FE9140E30577FC200D172AD /* Info.plist */,
+				F7000000000000000000SK01 /* Mealy.storekit */,
 				7FE9140B3057750200D172AD /* GroceryManager.entitlements */,
 				B10000000000000000000001 /* GroceryManagerApp.swift */,
 				B10000000000000000000016 /* Persistence.swift */,
@@ -126,6 +213,8 @@
 		D10000000000000000000003 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F72F6ADA96064FEE730512A5 /* HouseholdModels.swift */,
+				F78FD90A2A56F7485FF8AE48 /* PrepModels.swift */,
 				B10000000000000000000002 /* GroceryModels.swift */,
 			);
 			path = Models;
@@ -134,12 +223,19 @@
 		D10000000000000000000004 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				F7330A850402C48B377321A0 /* AutoPlanView.swift */,
+				F71DC34DABC5A10A4A774A3E /* PrepSessionView.swift */,
+				F79BA043D70D3B38BB149911 /* SettingsView.swift */,
+				F7FDFCC77D22D711873203FE /* PaywallView.swift */,
 				B10000000000000000000003 /* ContentView.swift */,
 				B10000000000000000000005 /* InventoryDashboardView.swift */,
 				7FF4C56D3059281400D0FAA7 /* GroceryListView.swift */,
 				B10000000000000000000006 /* LocationListView.swift */,
 				B10000000000000000000007 /* Forms.swift */,
 				B10000000000000000000012 /* RecipeViews.swift */,
+				B1000000000000000000001C /* DesignSystem.swift */,
+				B1000000000000000000001B /* MealPlanView.swift */,
+				B1000000000000000000001F /* MealPrepView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -150,6 +246,7 @@
 				7FF4C571305F098300D0FAA7 /* GroceryViewModel.swift */,
 				B10000000000000000000004 /* InventoryViewModel.swift */,
 				B10000000000000000000011 /* RecipeViewModel.swift */,
+				B1000000000000000000001A /* MealPlanViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -157,11 +254,33 @@
 		D10000000000000000000006 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				F7C280736E823EEBD42331E1 /* HouseholdSync.swift */,
+				F72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift */,
+				F7CB2E17E61C6E072F2563B4 /* CheckoutProviders.swift */,
+				F75138FBDFC2419B59C15790 /* RecipeSuggestions.swift */,
+				F73A5094C96DE0207485C250 /* AutoPlanner.swift */,
+				F7DBDBC041D069BC38B3AECB /* PriceSource.swift */,
+				F7F36F5726AB8274F2C50400 /* SeedData.swift */,
+				F7D300378D5EDDAA69C6F2D3 /* DataTransfer.swift */,
+				F7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift */,
+				F7697E5D156910668560C5A0 /* UseItUpSuggester.swift */,
+				F7969CC36010AD6FBDEFC588 /* Nutrition.swift */,
+				F750B414694415CC1B2379D8 /* RecipeImport.swift */,
+				F74874A5BFC9FF60A5D9BE50 /* RecipeSchemaParser.swift */,
+				F77207D3A80C6B4E33C2D7D8 /* IngredientLineParser.swift */,
+				F77F8EF8E48B98C4FEA98298 /* GroceryListBuilder.swift */,
+				F7ED6C01D7C38373B2228C4C /* GroceryCatalog.swift */,
+				F7C8341A57E34E039BBBD362 /* AppSettings.swift */,
+				F79A4D860CE3AA4FD97DF8E2 /* APIClient.swift */,
+				F74409AB1D570BA4AA33A789 /* SubscriptionStore.swift */,
+				F7B51A5D602B561D11921259 /* Entitlements.swift */,
 				B10000000000000000000008 /* NotificationManager.swift */,
 				B10000000000000000000013 /* PantryMatcher.swift */,
 				B10000000000000000000014 /* UnitConversion.swift */,
 				B10000000000000000000015 /* OnDeviceRecipeImporter.swift */,
 				B10000000000000000000017 /* GroceryAppIntents.swift */,
+				B1000000000000000000001D /* SiriIntents.swift */,
+				B1000000000000000000001E /* MealPrepPlanner.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -169,12 +288,39 @@
 		D10000000000000000000007 /* GroceryManagerTests */ = {
 			isa = PBXGroup;
 			children = (
+				F795C39842009DA032607D65 /* PlusFeatureTests.swift */,
+				F79CA0776D31E67E4CC2B000 /* DataTransferTests.swift */,
+				F7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift */,
+				F7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift */,
+				F7C58AFA2C6293FE34312179 /* EntitlementTests.swift */,
+				F78C4F827A4514767FEAB90C /* PantryDeductionTests.swift */,
+				F7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift */,
+				F718D1B145E8A7490210D79D /* UnitConversionTests.swift */,
 				B10000000000000000000009 /* ExpiryNotificationPlannerTests.swift */,
+				B10000000000000000000020 /* MealPrepPlannerTests.swift */,
 			);
 			path = GroceryManagerTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXContainerItemProxy section */
+		E20000000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E10000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E10000000000000000000000;
+			remoteInfo = GroceryManager;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		E20000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E10000000000000000000000 /* GroceryManager */;
+			targetProxy = E20000000000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXNativeTarget section */
 		E10000000000000000000000 /* GroceryManager */ = {
@@ -205,6 +351,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E20000000000000000000001 /* PBXTargetDependency */,
 			);
 			name = GroceryManagerTests;
 			productName = GroceryManagerTests;
@@ -217,7 +364,8 @@
 		E10000000000000000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 2700;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2720;
 				TargetAttributes = {
 					E10000000000000000000000 = {
 						CreatedOnToolsVersion = 27.0;
@@ -250,6 +398,7 @@
 			files = (
 				7FE9140D30577B1A00D172AD /* Grocery Manager.icon in Resources */,
 				7FF4C570305B828D00D0FAA7 /* Untitled 8.svg in Resources */,
+				7F308F97305FAF3F00975FA9 /* AGENTS.md in Resources */,
 				A10000000000000000000019 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -268,6 +417,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7330A850402C48B377321A0 /* AutoPlanView.swift in Sources */,
+				A7C280736E823EEBD42331E1 /* HouseholdSync.swift in Sources */,
+				A72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift in Sources */,
+				A7CB2E17E61C6E072F2563B4 /* CheckoutProviders.swift in Sources */,
+				A75138FBDFC2419B59C15790 /* RecipeSuggestions.swift in Sources */,
+				A73A5094C96DE0207485C250 /* AutoPlanner.swift in Sources */,
+				A7DBDBC041D069BC38B3AECB /* PriceSource.swift in Sources */,
+				A71DC34DABC5A10A4A774A3E /* PrepSessionView.swift in Sources */,
+				A79BA043D70D3B38BB149911 /* SettingsView.swift in Sources */,
+				A7FDFCC77D22D711873203FE /* PaywallView.swift in Sources */,
+				A7F36F5726AB8274F2C50400 /* SeedData.swift in Sources */,
+				A7D300378D5EDDAA69C6F2D3 /* DataTransfer.swift in Sources */,
+				A7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift in Sources */,
+				A7697E5D156910668560C5A0 /* UseItUpSuggester.swift in Sources */,
+				A7969CC36010AD6FBDEFC588 /* Nutrition.swift in Sources */,
+				A750B414694415CC1B2379D8 /* RecipeImport.swift in Sources */,
+				A74874A5BFC9FF60A5D9BE50 /* RecipeSchemaParser.swift in Sources */,
+				A77207D3A80C6B4E33C2D7D8 /* IngredientLineParser.swift in Sources */,
+				A77F8EF8E48B98C4FEA98298 /* GroceryListBuilder.swift in Sources */,
+				A7ED6C01D7C38373B2228C4C /* GroceryCatalog.swift in Sources */,
+				A7C8341A57E34E039BBBD362 /* AppSettings.swift in Sources */,
+				A79A4D860CE3AA4FD97DF8E2 /* APIClient.swift in Sources */,
+				A74409AB1D570BA4AA33A789 /* SubscriptionStore.swift in Sources */,
+				A7B51A5D602B561D11921259 /* Entitlements.swift in Sources */,
+				A72F6ADA96064FEE730512A5 /* HouseholdModels.swift in Sources */,
+				A78FD90A2A56F7485FF8AE48 /* PrepModels.swift in Sources */,
 				A10000000000000000000001 /* GroceryManagerApp.swift in Sources */,
 				A10000000000000000000002 /* GroceryModels.swift in Sources */,
 				7FF4C56E3059281C00D0FAA7 /* GroceryListView.swift in Sources */,
@@ -280,6 +455,12 @@
 				A10000000000000000000008 /* NotificationManager.swift in Sources */,
 				A10000000000000000000011 /* RecipeViewModel.swift in Sources */,
 				A10000000000000000000012 /* RecipeViews.swift in Sources */,
+				A1000000000000000000001D /* SiriIntents.swift in Sources */,
+				A1000000000000000000001E /* MealPrepPlanner.swift in Sources */,
+				A1000000000000000000001C /* DesignSystem.swift in Sources */,
+				A1000000000000000000001F /* MealPrepView.swift in Sources */,
+				A1000000000000000000001B /* MealPlanView.swift in Sources */,
+				A1000000000000000000001A /* MealPlanViewModel.swift in Sources */,
 				A10000000000000000000013 /* PantryMatcher.swift in Sources */,
 				A10000000000000000000014 /* UnitConversion.swift in Sources */,
 				A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */,
@@ -293,7 +474,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A795C39842009DA032607D65 /* PlusFeatureTests.swift in Sources */,
+				A79CA0776D31E67E4CC2B000 /* DataTransferTests.swift in Sources */,
+				A7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift in Sources */,
+				A7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift in Sources */,
+				A7C58AFA2C6293FE34312179 /* EntitlementTests.swift in Sources */,
+				A78C4F827A4514767FEAB90C /* PantryDeductionTests.swift in Sources */,
+				A7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift in Sources */,
+				A718D1B145E8A7490210D79D /* UnitConversionTests.swift in Sources */,
 				A10000000000000000000009 /* ExpiryNotificationPlannerTests.swift in Sources */,
+				A10000000000000000000020 /* MealPrepPlannerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +495,37 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -314,6 +535,36 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
@@ -324,6 +575,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "Grocery Manager";
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = "Grocery Manager";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = GroceryManager/GroceryManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -336,9 +588,9 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = " ";
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryMang;
+				PRODUCT_BUNDLE_IDENTIFIER = work.pumpkinpatch.mealy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -352,6 +604,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "Grocery Manager";
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]" = "Grocery Manager";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = GroceryManager/GroceryManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -364,9 +617,9 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = " ";
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.GroceryMang;
+				PRODUCT_BUNDLE_IDENTIFIER = work.pumpkinpatch.mealy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -378,6 +631,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
@@ -393,6 +647,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;

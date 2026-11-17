@@ -57,12 +57,14 @@ enum UnitConverter {
             return quantity * 0.6161151992
         case .smidgens:
             return quantity * 0.1540287998
+        case .serving:
+            return quantity
         }
     }
 
     private static func dimension(for unit: QuantityUnit) -> Dimension {
         switch unit {
-        case .item, .dozen: .count
+        case .item, .dozen, .serving: .count
         case .grams, .kilograms, .ounces, .pounds: .mass
         case .milliliters, .liters, .fluidOunces, .teaspoons, .tablespoons, .cups, .pints, .quarts, .gallons, .pinches, .dashes, .smidgens: .volume
         }

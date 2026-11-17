@@ -6,6 +6,8 @@
 	<array>
 		<string>CheckRecipesIntent</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pick a screenshot, cookbook photo or handwritten card to import a recipe. Text is read on your device.</string>
 	<key>NSAppGroups</key>
 	<array>
 		<string>group.com.example.grocerymanager</string>
@@ -33,6 +35,11 @@
 		<string>RemoveIngredientIntent</string>
 		<string>AddRecipeIntent</string>
 		<string>RemoveRecipeIntent</string>
+		<string>com.example.GroceryMang.viewRecipe</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>

@@ -46,23 +46,6 @@ struct LocationListView: View {
         ingredients.filter { $0.location == nil }
     }
 
-    private func categoryIcon(for ingredient: Ingredient) -> String {
-        switch ingredient.category.lowercased() {
-        case "dairy":
-            return "drop.fill"
-        case "produce", "fruit", "vegetable":
-            return "leaf.fill"
-        case "meat", "protein":
-            return "fork.knife"
-        case "bakery", "grain", "pantry":
-            return "basket.fill"
-        case "seafood":
-            return "fish.fill"
-        default:
-            return "tag.fill"
-        }
-    }
-
     var body: some View {
         ScrollView {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: gridColumnCount), spacing: 16) {
@@ -79,12 +62,10 @@ struct LocationListView: View {
                             locationTile(for: location)
                         }
                         .buttonStyle(.plain)
-                        .swipeActions {
-                            Button(role: .destructive) {
+                        .contextMenu {
+                            Button("Delete", systemImage: "trash", role: .destructive) {
                                 modelContext.delete(location)
                                 try? modelContext.save()
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }
@@ -110,9 +91,9 @@ struct LocationListView: View {
                                         }
                                         Spacer()
                                     }
-                                    .padding(10)
+                                    .padding(12)
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12))
+                                    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 16))
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -123,6 +104,7 @@ struct LocationListView: View {
             }
             .padding()
         }
+        .background { AmbientBackground(tint: .teal) }
         .navigationTitle("Storage")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -131,6 +113,7 @@ struct LocationListView: View {
                 } label: {
                     Label("Add storage location", systemImage: "plus")
                 }
+                .buttonStyle(.glassProminent)
             }
         }
         .sheet(isPresented: $showingAddLocation) {
@@ -150,9 +133,7 @@ struct LocationListView: View {
     private func locationTile(for location: StorageLocation) -> some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .center) {
-                Image(systemName: location.icon)
-                    .font(.headline)
-                    .foregroundStyle(.tint)
+                IconTile(symbol: location.icon, tint: .teal, size: 32)
                 Text(location.name)
                     .font(.title3.weight(.semibold))
                 Spacer()
@@ -179,21 +160,17 @@ struct LocationListView: View {
                 }
             }
         }
-        .padding(14)
+        .padding(16)
         .frame(maxWidth: .infinity, minHeight: 220, alignment: .leading)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color(.separator), lineWidth: 1)
-        )
+        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
     }
 
     private func shelfItemView(for ingredient: Ingredient) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
-                Image(systemName: categoryIcon(for: ingredient))
+                Image(systemName: CategoryStyle.symbol(for: ingredient.category))
                     .font(.caption2)
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(CategoryStyle.tint(for: ingredient.category))
                 Text(ingredient.name)
                     .font(.caption.weight(.semibold))
                     .lineLimit(1)
@@ -206,7 +183,7 @@ struct LocationListView: View {
         .padding(.vertical, 8)
         .padding(.horizontal, 10)
         .frame(maxWidth: .infinity, minHeight: 58, alignment: .leading)
-        .background(.white.opacity(0.35), in: RoundedRectangle(cornerRadius: 12))
+        .background(.fill.tertiary, in: .rect(cornerRadius: 14))
     }
 
     private func emptyShelfSlot() -> some View {
@@ -238,7 +215,7 @@ struct LocationDetailView: View {
                     } label: {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(ingredient.name)
-                            Text("\(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2)))) · expires \(ingredient.expiryDate, format: .dateTime.month(.abbreviated).day().year())")
+                            Text("\(ingredient.quantity.quantityText) \(ingredient.unit) · expires \(ingredient.expiryDate, format: .dateTime.month(.abbreviated).day().year())")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
