@@ -13,6 +13,7 @@ final class RecipeViewModel: ObservableObject {
         existing existingRecipe: Recipe?,
         name: String,
         instructions: String,
+        servings: Int? = nil,
         ingredients: [DraftRecipeIngredient]
     ) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -27,16 +28,56 @@ final class RecipeViewModel: ObservableObject {
         }
         recipe.name = trimmedName
         recipe.instructions = instructions
+        if let servings { recipe.servings = max(servings, 1) }
 
-        recipe.ingredients.removeAll()
+        // Delete the old rows rather than just detaching them, so orphans don't pile up (and sync).
+        recipe.ingredients.forEach(modelContext.delete)
+        recipe.ingredients = []
+        var order = 0
         for draft in ingredients where !draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             recipe.ingredients.append(RecipeIngredient(
                 name: draft.name.trimmingCharacters(in: .whitespacesAndNewlines),
                 requiredQuantity: max(draft.quantity, 0),
                 unit: draft.unit,
+                note: draft.note,
+                sortOrder: order,
                 recipe: recipe
             ))
+            order += 1
         }
+        saveChanges()
+    }
+
+    /// Saves an imported recipe with all of its metadata. Returns the saved recipe.
+    @discardableResult
+    func save(draft: ImportedRecipeDraft, existing: Recipe? = nil) -> Recipe? {
+        saveRecipe(existing: existing, name: draft.name, instructions: draft.instructions, servings: draft.servings, ingredients: draft.ingredients)
+        let recipe = existing ?? ((try? modelContext.fetch(FetchDescriptor<Recipe>())) ?? []).first { $0.name == draft.name.trimmingCharacters(in: .whitespacesAndNewlines) }
+        guard let recipe else { return nil }
+        if !draft.sourceURL.isEmpty { recipe.sourceURL = draft.sourceURL }
+        if !draft.imageURL.isEmpty { recipe.imageURL = draft.imageURL }
+        if draft.prepMinutes > 0 { recipe.prepMinutes = draft.prepMinutes }
+        if draft.cookMinutes > 0 { recipe.cookMinutes = draft.cookMinutes }
+        if !draft.tags.isEmpty { recipe.tagList = draft.tags }
+        if let nutrition = draft.nutritionPerServing {
+            recipe.caloriesPerServing = nutrition.calories
+            recipe.proteinPerServing = nutrition.protein
+            recipe.carbsPerServing = nutrition.carbs
+            recipe.fatPerServing = nutrition.fat
+        }
+        saveChanges()
+        return recipe
+    }
+
+    func update(_ recipe: Recipe, nutrition: NutritionFacts?, prepMinutes: Int, cookMinutes: Int, tags: [String], sourceURL: String) {
+        recipe.caloriesPerServing = nutrition?.calories ?? 0
+        recipe.proteinPerServing = nutrition?.protein ?? 0
+        recipe.carbsPerServing = nutrition?.carbs ?? 0
+        recipe.fatPerServing = nutrition?.fat ?? 0
+        recipe.prepMinutes = max(prepMinutes, 0)
+        recipe.cookMinutes = max(cookMinutes, 0)
+        recipe.tagList = tags
+        recipe.sourceURL = sourceURL
         saveChanges()
     }
 
@@ -59,4 +100,5 @@ struct DraftRecipeIngredient: Identifiable, Equatable {
     var name: String
     var quantity: Double
     var unit: String
+    var note: String = ""
 }

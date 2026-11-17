@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict/>
+<dict>
+	<key>INIntentsSupported</key>
+	<array>
+		<string>CheckRecipesIntent</string>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pick a screenshot, cookbook photo or handwritten card to import a recipe. Text is read on your device.</string>
+	<key>NSAppGroups</key>
+	<array>
+		<string>group.com.example.grocerymanager</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<array>
+		<dict>
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>localhost</key>
+				<dict>
+					<key>NSExceptionAllowsInsecureHTTPLoads</key>
+					<true/>
+				</dict>
+			</dict>
+		</dict>
+	</array>
+	<key>NSApplicationSupportsAppTransportSecurity</key>
+	<true/>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>AddStorageLocationIntent</string>
+		<string>RemoveStorageLocationIntent</string>
+		<string>AddIngredientIntent</string>
+		<string>RemoveIngredientIntent</string>
+		<string>AddRecipeIntent</string>
+		<string>RemoveRecipeIntent</string>
+		<string>com.example.GroceryMang.viewRecipe</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+</dict>
 </plist>

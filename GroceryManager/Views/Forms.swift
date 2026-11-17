@@ -59,7 +59,7 @@ struct IngredientFormView: View {
     @State private var expiryDate: Date
     @State private var selectedLocation: StorageLocation?
 
-    private let categories = ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Beverages", "Other"]
+    private let categories = CategoryStyle.all
 
     init(ingredient: Ingredient? = nil, defaultLocation: StorageLocation? = nil) {
         self.ingredient = ingredient
@@ -118,6 +118,72 @@ struct IngredientFormView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         InventoryViewModel(modelContext: modelContext).saveIngredient(existing: ingredient, name: name, quantity: quantity, unit: unit, initialQuantity: initialQuantity, reorderThreshold: reorderThreshold, category: category, expiryDate: expiryDate, location: selectedLocation)
+                        dismiss()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+    }
+}
+struct GroceryFormView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    let groceries: GroceryItem?
+    @State private var name: String
+    @State private var quantity: Double
+    @State private var unit: String
+    @State private var category: String
+    @State private var note: String
+    @State private var didPickCategory: Bool
+
+    private let categories = CategoryStyle.all
+
+    init(groceries: GroceryItem? = nil) {
+        self.groceries = groceries
+        _name = State(initialValue: groceries?.name ?? "")
+        _quantity = State(initialValue: groceries?.quantity ?? 1)
+        _unit = State(initialValue: groceries?.unit ?? "item")
+        _category = State(initialValue: groceries?.category ?? "Other")
+        _note = State(initialValue: groceries?.note ?? "")
+        _didPickCategory = State(initialValue: groceries != nil)
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("Name", text: $name)
+                    .onChange(of: name) { _, newValue in
+                        // Suggest the aisle from the name until the user picks one themselves.
+                        guard !didPickCategory else { return }
+                        category = AisleClassifier.category(for: newValue)
+                    }
+                TextField("Note (brand, size…)", text: $note)
+                TextField("Quantity", value: $quantity, format: .number)
+                    .keyboardType(.decimalPad)
+                Stepper(value: $quantity, in: 0...999, step: 0.5) {
+                    LabeledContent("Quantity", value: quantity.formatted(.number.precision(.fractionLength(0...2))))
+                }
+                Picker("Unit", selection: $unit) {
+                    ForEach(QuantityUnit.allCases, id: \.self) { unit in
+                        Text(unit.rawValue).tag(unit.rawValue)
+                    }
+                }
+                .pickerStyle(.menu)
+                Picker("Aisle", selection: $category) {
+                    ForEach(categories, id: \.self, content: Text.init)
+                }
+                .onChange(of: category) { _, _ in didPickCategory = true }
+            }
+            .navigationTitle(groceries == nil ? "New Grocery Item" : "Edit Grocery Item")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        GroceryViewModel(modelContext: modelContext).saveGrocery(existing: groceries, name: name, quantity: quantity, unit: unit, category: category, note: note)
                         dismiss()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

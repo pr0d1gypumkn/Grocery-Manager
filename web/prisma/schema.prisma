@@ -1,0 +1,295 @@
+// Mealy server schema. Free users never touch this: it only holds accounts, subscriptions,
+// and the household data of paid users who sync. Keep column names in step with
+// ExportBundle in the iOS app so sync payloads map 1:1.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  createdAt   DateTime @default(now())
+  region      String   @default("US") // US | CA
+  currency    String   @default("USD")
+  unitSystem  String   @default("imperial") // metric | imperial
+  dietTags    String   @default("")
+  weeklyBudgetCents Int @default(0)
+  stripeCustomerId String? @unique
+  appleAppAccountToken String? @unique
+
+  memberships   HouseholdMember[]
+  subscriptions Subscription[]
+  authCodes     AuthCode[]
+  ownedHouseholds Household[] @relation("owner")
+}
+
+model AuthCode {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Household {
+  id        String   @id @default(cuid())
+  name      String
+  ownerId   String
+  owner     User     @relation("owner", fields: [ownerId], references: [id])
+  inviteCode String  @unique @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members    HouseholdMember[]
+  recipes    Recipe[]
+  meals      MealPlanEntry[]
+  groceries  GroceryItem[]
+  locations  PantryLocation[]
+  pantry     PantryItem[]
+  prepSessions PrepSession[]
+  prepBatches PrepBatch[]
+}
+
+model HouseholdMember {
+  id                String   @id @default(cuid())
+  householdId       String
+  household         Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  userId            String?
+  user              User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name              String
+  role              String   @default("member") // owner | member
+  portionMultiplier Float    @default(1)
+  dietTags          String   @default("")
+  sortOrder         Int      @default(0)
+
+  @@unique([householdId, userId])
+  @@index([householdId])
+}
+
+model Recipe {
+  id            String   @id @default(cuid())
+  householdId   String
+  household     Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  clientId      String?  // id on the originating device, for idempotent sync
+  name          String
+  instructions  String   @default("")
+  servings      Int      @default(2)
+  sourceUrl     String   @default("")
+  imageUrl      String   @default("")
+  prepMinutes   Int      @default(0)
+  cookMinutes   Int      @default(0)
+  tags          String   @default("")
+  caloriesPerServing Float @default(0)
+  proteinPerServing  Float @default(0)
+  carbsPerServing    Float @default(0)
+  fatPerServing      Float @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  ingredients RecipeIngredient[]
+  meals       MealPlanEntry[]
+  batches     PrepBatch[]
+
+  @@unique([householdId, clientId])
+  @@index([householdId, name])
+}
+
+model RecipeIngredient {
+  id        String  @id @default(cuid())
+  recipeId  String
+  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  name      String
+  quantity  Float   @default(1)
+  unit      String  @default("item")
+  note      String  @default("")
+  sortOrder Int     @default(0)
+
+  @@index([recipeId])
+}
+
+model MealPlanEntry {
+  id          String   @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  clientId    String?
+  date        DateTime @db.Date
+  mealType    String   // Breakfast | Lunch | Dinner | Snack
+  recipeId    String?
+  recipe      Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  servings    Int      @default(2)
+  note        String   @default("")
+  isCooked    Boolean  @default(false)
+  batchId     String?
+  batch       PrepBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([householdId, clientId])
+  @@index([householdId, date])
+}
+
+model GroceryItem {
+  id          String   @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  clientId    String?
+  name        String
+  quantity    Float    @default(1)
+  unit        String   @default("item")
+  category    String   @default("Other")
+  isChecked   Boolean  @default(false)
+  source      String   @default("manual")
+  plannedWeekStart DateTime? @db.Date
+  note        String   @default("")
+  priceCents  Int      @default(0)
+  currency    String   @default("")
+  storeName   String   @default("")
+  checkedAt   DateTime?
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([householdId, clientId])
+  @@index([householdId])
+}
+
+model PantryLocation {
+  id          String   @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  name        String
+  icon        String   @default("shippingbox")
+  items       PantryItem[]
+
+  @@unique([householdId, name])
+}
+
+model PantryItem {
+  id              String   @id @default(cuid())
+  householdId     String
+  household       Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  clientId        String?
+  locationId      String?
+  location        PantryLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  name            String
+  quantity        Float    @default(1)
+  unit            String   @default("item")
+  initialQuantity Float    @default(1)
+  reorderThreshold Float   @default(0)
+  category        String   @default("Other")
+  expiryDate      DateTime
+  source          String   @default("manual")
+  batchId         String?  @unique
+  batch           PrepBatch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  @@unique([householdId, clientId])
+  @@index([householdId, expiryDate])
+}
+
+model PrepSession {
+  id          String   @id @default(cuid())
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  clientId    String?
+  date        DateTime @default(now())
+  weekStart   DateTime @db.Date
+  title       String   @default("")
+  plan        Json
+  completedStepIds String[] @default([])
+  isCompleted Boolean  @default(false)
+  estimatedMinutes Int @default(0)
+  batches     PrepBatch[]
+
+  @@unique([householdId, clientId])
+}
+
+model PrepBatch {
+  id           String   @id @default(cuid())
+  householdId  String
+  household    Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  clientId     String?
+  sessionId    String?
+  session      PrepSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  recipeId     String?
+  recipe       Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  name         String
+  portions     Int
+  portionsLeft Int
+  container    String   @default("")
+  storage      String   @default("Fridge")
+  madeOn       DateTime @default(now())
+  expiryDate   DateTime
+  meals        MealPlanEntry[]
+  stockItem    PantryItem?
+
+  @@unique([householdId, clientId])
+}
+
+// One row per subscription we know about, from either store. The entitlement resolver
+// looks at all of a user's rows and keeps the most generous active one.
+model Subscription {
+  id                 String   @id @default(cuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider           String   // apple | stripe
+  providerSubscriptionId String @unique // originalTransactionId or Stripe sub id
+  productId          String
+  tier               String   @default("plus")
+  period             String   // monthly | yearly
+  status             String   // active | grace | expired | cancelled | revoked
+  currentPeriodEnd   DateTime
+  isInGracePeriod    Boolean  @default(false)
+  environment        String   @default("production")
+  updatedAt          DateTime @updatedAt
+  createdAt          DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Store {
+  id        String @id @default(cuid())
+  key       String @unique  // loblaws, walmart-ca, kroger, ...
+  name      String
+  region    String // US | CA
+  sourceKind String // flyer | api | mock
+  supportsCheckout Boolean @default(false)
+  quotes    PriceQuote[]
+}
+
+model PriceQuote {
+  id         String   @id @default(cuid())
+  storeId    String
+  store      Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  itemKey    String   // normalised ingredient key, e.g. "chicken thigh"
+  label      String
+  priceCents Int
+  currency   String
+  quantity   Float
+  unit       String
+  isSale     Boolean  @default(false)
+  validFrom  DateTime
+  validTo    DateTime
+  source     String   @default("mock")
+
+  @@index([itemKey, validTo])
+}
+
+model WebhookEvent {
+  id         String   @id @default(cuid())
+  provider   String
+  eventId    String   @unique
+  receivedAt DateTime @default(now())
+  payload    Json
+}

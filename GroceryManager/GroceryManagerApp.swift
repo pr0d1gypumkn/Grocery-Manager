@@ -3,27 +3,39 @@ import SwiftData
 
 @main
 struct GroceryManagerApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            StorageLocation.self,
-            Ingredient.self,
-            Recipe.self,
-            RecipeIngredient.self
-        ])
-
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    private let sharedModelContainer = PersistenceController.shared
+    @State private var isLaunching = true
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack {
+                ContentView()
+                    .opacity(isLaunching ? 0 : 1)
+                    .animation(.easeInOut(duration: 0.6), value: isLaunching)
+
+                LaunchScreenView { isLaunching = false }
+                    .opacity(isLaunching ? 1 : 0)
+                    .scaleEffect(isLaunching ? 1 : 1.08)
+                    .animation(.easeInOut(duration: 0.6), value: isLaunching)
+                    .allowsHitTesting(isLaunching)
+            }
+            .task {
+                seedDemoDataIfNeeded()
+                await EntitlementService.shared.refresh()
+                await IntentStore.refreshSiriIndex()
+            }
         }
         .modelContainer(sharedModelContainer)
     }
+
+    /// First launch on an empty store: load the demo so the whole loop can be tried at once.
+    @MainActor
+    private func seedDemoDataIfNeeded() {
+        let settings = AppSettings.shared
+        let context = sharedModelContainer.mainContext
+        guard !settings.didSeedDemoData, DemoData.isEmpty(context) else { return }
+        DemoData.load(into: context)
+        settings.didSeedDemoData = true
+    }
 }
+
