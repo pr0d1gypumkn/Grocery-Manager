@@ -10,6 +10,7 @@ export const GET = withUser(async (_request, user) => {
     id: household.id,
     name: household.name,
     inviteCode: household.inviteCode,
+    isOwner: household.ownerId === user.id,
     members: members.map((m) => ({ id: m.id, name: m.name, email: m.user?.email ?? null, role: m.role, portionMultiplier: m.portionMultiplier, dietTags: m.dietTags })),
   });
 });

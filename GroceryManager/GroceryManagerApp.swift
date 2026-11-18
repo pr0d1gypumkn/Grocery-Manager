@@ -22,6 +22,8 @@ struct GroceryManagerApp: App {
             .task {
                 seedDemoDataIfNeeded()
                 await EntitlementService.shared.refresh()
+                await AccountSession.shared.signInFromPurchaseIfNeeded()
+                if AccountSession.shared.isSignedIn { await HouseholdSyncService.shared.refreshInvite() }
                 await IntentStore.refreshSiriIndex()
             }
         }

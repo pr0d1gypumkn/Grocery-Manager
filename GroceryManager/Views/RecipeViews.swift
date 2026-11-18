@@ -165,22 +165,38 @@ private struct RecipeRow: View {
                 Text(recipe.name)
                     .font(.body.weight(.semibold))
                     .lineLimit(2)
-                HStack(spacing: 8) {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                    if recipe.ingredients.isEmpty {
-                        EmptyView()
-                    } else if missingCount == 0 {
-                        StatusBadge(text: "Ready", symbol: "checkmark.circle.fill", tint: .green)
-                    } else {
-                        StatusBadge(text: "Missing \(missingCount)", tint: .orange)
+                // Keep the metadata on one line next to the badge when it fits;
+                // otherwise stack them so neither gets truncated.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        subtitleText.fixedSize()
+                        stockBadge
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        subtitleText.lineLimit(2)
+                        stockBadge
                     }
                 }
             }
         }
         .padding(.vertical, 4)
+    }
+
+    private var subtitleText: some View {
+        Text(subtitle)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+    }
+
+    @ViewBuilder
+    private var stockBadge: some View {
+        if recipe.ingredients.isEmpty {
+            EmptyView()
+        } else if missingCount == 0 {
+            StatusBadge(text: "Ready", symbol: "checkmark.circle.fill", tint: .green)
+        } else {
+            StatusBadge(text: "Missing \(missingCount)", tint: .orange)
+        }
     }
 }
 
@@ -536,7 +552,7 @@ struct RecipeDetailView: View {
         }
         // On-screen awareness: tells Siri which recipe is showing, so requests like
         // "plan this for Friday" or "what do I need for this?" resolve to it.
-        .userActivity("com.example.GroceryMang.viewRecipe") { activity in
+        .userActivity("work.pumpkinpatch.mealy.viewRecipe") { activity in
             activity.title = recipe.name
             activity.appEntityIdentifier = EntityIdentifier(for: RecipeEntity.self, identifier: recipe.name)
         }
@@ -584,9 +600,9 @@ private struct PantryMatchRow: View {
 
     private var quantityLabel: String {
         if isMissing {
-            return "Buy \(match.missingQuantity.formatted(.number.precision(.fractionLength(0...2)))) \(match.unit)"
+            return "Buy \(match.missingQuantity.quantityText(unit: match.unit))"
         }
-        return "Have \(match.availableQuantity.formatted(.number.precision(.fractionLength(0...2)))) \(match.unit)"
+        return "Have \(match.availableQuantity.quantityText(unit: match.unit))"
     }
 }
 

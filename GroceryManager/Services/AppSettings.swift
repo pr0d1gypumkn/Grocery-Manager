@@ -148,6 +148,6 @@ extension UnitConverter {
 
     static func displayText(_ quantity: Double, unit: String, system: UnitSystem) -> String {
         let shown = display(quantity, unit: unit, system: system)
-        return "\(shown.quantity.quantityText) \(shown.unit)"
+        return shown.quantity.quantityText(unit: shown.unit)
     }
 }

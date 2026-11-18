@@ -50,6 +50,7 @@ final class SubscriptionStore {
                 if case .verified(let transaction) = result {
                     await transaction.finish()
                     await EntitlementService.shared.refresh()
+                    await AccountSession.shared.signInFromPurchaseIfNeeded()
                 }
                 _ = self
             }
@@ -101,6 +102,7 @@ final class SubscriptionStore {
                 }
                 await transaction.finish()
                 await EntitlementService.shared.refresh()
+                await AccountSession.shared.signInFromPurchaseIfNeeded()
                 return true
             case .userCancelled, .pending:
                 return false
@@ -125,5 +127,6 @@ final class SubscriptionStore {
     func restore() async {
         try? await AppStore.sync()
         await EntitlementService.shared.refresh()
+        await AccountSession.shared.signInFromPurchaseIfNeeded()
     }
 }

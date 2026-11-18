@@ -2,7 +2,6 @@ import SwiftData
 import SwiftUI
 
 enum LocationShelfLayout {
-    static let shelfCount = 3
     static let itemsPerShelf = 2
 
     static func rows(for ingredients: [Ingredient]) -> [[Ingredient?]] {
@@ -28,11 +27,12 @@ enum LocationShelfLayout {
             rows.append(currentRow)
         }
 
-        while rows.count < shelfCount {
+        // An empty location shows one row of placeholder slots; otherwise every item is shown.
+        if rows.isEmpty {
             rows.append(Array(repeating: nil, count: itemsPerShelf))
         }
 
-        return Array(rows.prefix(shelfCount))
+        return rows
     }
 }
 
@@ -85,7 +85,7 @@ struct LocationListView: View {
                                             .foregroundStyle(.secondary)
                                         VStack(alignment: .leading) {
                                             Text(ingredient.name)
-                                            Text("\(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2)))) \(ingredient.unit)")
+                                            Text(ingredient.quantity.quantityText(unit: ingredient.unit))
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
                                         }
@@ -137,7 +137,7 @@ struct LocationListView: View {
                 Text(location.name)
                     .font(.title3.weight(.semibold))
                 Spacer()
-                Text("\(location.ingredients.count) items")
+                Text(location.ingredients.count.counted("item"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -145,8 +145,8 @@ struct LocationListView: View {
             let shelves = LocationShelfLayout.rows(for: location.ingredients)
 
             VStack(spacing: 8) {
-                ForEach(0..<LocationShelfLayout.shelfCount, id: \.self) { rowIndex in
-                    let rowItems = shelves.indices.contains(rowIndex) ? shelves[rowIndex] : Array(repeating: nil as Ingredient?, count: LocationShelfLayout.itemsPerShelf)
+                ForEach(shelves.indices, id: \.self) { rowIndex in
+                    let rowItems = shelves[rowIndex]
 
                     HStack(spacing: 8) {
                         ForEach(0..<LocationShelfLayout.itemsPerShelf, id: \.self) { itemIndex in
@@ -161,7 +161,7 @@ struct LocationListView: View {
             }
         }
         .padding(16)
-        .frame(maxWidth: .infinity, minHeight: 220, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 28))
     }
 
@@ -175,7 +175,7 @@ struct LocationListView: View {
                     .font(.caption.weight(.semibold))
                     .lineLimit(1)
             }
-            Text("\(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2)))) \(ingredient.unit)")
+            Text(ingredient.quantity.quantityText(unit: ingredient.unit))
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)

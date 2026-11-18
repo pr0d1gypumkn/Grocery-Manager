@@ -5,7 +5,7 @@ import SwiftData
 enum PersistenceController {
     /// Must match the iCloud container in GroceryManager.entitlements
     /// (Signing & Capabilities ▸ iCloud ▸ Containers).
-    static let cloudKitContainerID = "iCloud.com.example.GroceryMang"
+    static let cloudKitContainerID = "iCloud.work.pumpkinpatch.mealy"
 
     static let schema = Schema([
         StorageLocation.self,
@@ -20,7 +20,7 @@ enum PersistenceController {
         HouseholdMember.self
     ])
 
-    private static let logger = Logger(subsystem: "com.example.GroceryMang", category: "Persistence")
+    private static let logger = Logger(subsystem: "work.pumpkinpatch.mealy", category: "Persistence")
 
     /// Data syncs through the user's private CloudKit database. SwiftData mirrors
     /// changes in the background and merges remote changes into `mainContext`,
@@ -50,7 +50,9 @@ enum PersistenceController {
                 let local = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .none)
                 return try ModelContainer(for: schema, configurations: [local])
             } catch {
-                fatalError("Could not create ModelContainer: \(error)")
+                // Last resort: an in-memory store so the app opens instead of crashing.
+                logger.fault("Local store failed to load, using in-memory store: \(error)")
+                return try! makeInMemoryContainer()
             }
         }
     }()

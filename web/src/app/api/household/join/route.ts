@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { withUser } from "@/lib/api";
 import { prisma } from "@/lib/db";
+import { displayName } from "@/lib/auth";
 
 /** Joining is free for the invitee: the household owner's plan covers sharing. */
 export const POST = withUser(async (request, user) => {
@@ -13,7 +14,7 @@ export const POST = withUser(async (request, user) => {
   await prisma.householdMember.upsert({
     where: { householdId_userId: { householdId: household.id, userId: user.id } },
     update: {},
-    create: { householdId: household.id, userId: user.id, name: user.email.split("@")[0] },
+    create: { householdId: household.id, userId: user.id, name: displayName(user) },
   });
   return NextResponse.json({ householdId: household.id, name: household.name });
 });

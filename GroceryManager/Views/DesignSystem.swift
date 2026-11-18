@@ -7,6 +7,24 @@ extension Double {
     var quantityText: String {
         formatted(.number.precision(.fractionLength(0...2)))
     }
+
+    /// "1 item", "2 items", "250 g" — pluralizes count units.
+    func quantityText(unit: String) -> String {
+        let plural = self != 1
+        let shown: String = switch unit {
+        case "item": plural ? "items" : "item"
+        case "serving": plural ? "servings" : "serving"
+        default: unit
+        }
+        return "\(quantityText) \(shown)"
+    }
+}
+
+extension Int {
+    /// "1 item", "9 items".
+    func counted(_ singular: String, _ plural: String? = nil) -> String {
+        "\(self) \(self == 1 ? singular : (plural ?? singular + "s"))"
+    }
 }
 
 // MARK: - Category styling
@@ -131,6 +149,7 @@ struct GlassStatTile: View {
                 .font(.headline)
                 .foregroundStyle(tint)
                 .symbolRenderingMode(.hierarchical)
+                .frame(height: 24, alignment: .leading)
             Text(value)
                 .font(.title2.weight(.semibold))
                 .monospacedDigit()
@@ -168,13 +187,13 @@ struct StatusBadge: View {
     var tint: Color
 
     var body: some View {
-        Label {
+        HStack(spacing: 4) {
+            if let symbol { Image(systemName: symbol).imageScale(.small) }
             Text(text)
-        } icon: {
-            if let symbol { Image(systemName: symbol) }
         }
-        .labelStyle(.titleAndIcon)
         .font(.caption.weight(.semibold))
+        .lineLimit(1)
+        .fixedSize()
         .foregroundStyle(tint)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)

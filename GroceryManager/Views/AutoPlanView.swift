@@ -36,7 +36,7 @@ struct AutoPlanView: View {
                         LabeledContent("Weekly budget", value: settings.formatPrice(cents: settings.weeklyBudgetCents))
                     }
                 } footer: {
-                    Text("Built from your recipes, what's in the pantry, your household's portions, diet tags and budget. Meals already on the plan are kept.")
+                    Text("Built from your recipes, what's in the pantry, your household's portions and diet tags. Meals already on the plan are kept.")
                 }
 
                 if isLoading {
@@ -109,7 +109,7 @@ struct AutoPlanView: View {
 
     private func build() async {
         isLoading = true
-        if prices == nil {
+        if prices == nil, EntitlementService.shared.hasFeature(.priceAwareShopping) {
             let unique = Dictionary(grouping: recipes.flatMap(\.ingredients), by: { IngredientNameMatcher.key($0.name) }).compactMap { $0.value.first }
             let lines = unique.map { PlannedGroceryLine(name: $0.name, quantity: $0.requiredQuantity, unit: $0.unit, category: "") }
             prices = await PriceService.price(lines, region: settings.region)

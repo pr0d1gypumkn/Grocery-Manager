@@ -268,6 +268,15 @@ private struct GroceryRow: View {
             .buttonStyle(.plain)
             .sensoryFeedback(.selection, trigger: grocery.isChecked)
 
+            NavigationLink(destination: GroceryFormView(groceries: grocery)) {
+                details
+            }
+            .accessibilityHint("Edit item")
+        }
+    }
+
+    private var details: some View {
+        HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(grocery.name)
                     .font(.headline)
@@ -283,7 +292,7 @@ private struct GroceryRow: View {
                         StatusBadge(text: "Running low", symbol: "chart.bar.xaxis.ascending", tint: .orange)
                     }
                     if !grocery.note.isEmpty {
-                        Text(grocery.note).font(.caption).foregroundStyle(.tertiary).lineLimit(1)
+                        Text(grocery.note).font(.caption).foregroundStyle(.tertiary).lineLimit(1).layoutPriority(-1)
                     }
                 }
             }
@@ -301,13 +310,8 @@ private struct GroceryRow: View {
                 }
             }
 
-            NavigationLink(destination: GroceryFormView(groceries: grocery)) {
-                Image(systemName: "pencil")
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
         }
-        .accessibilityElement(children: .combine)
+        .contentShape(.rect)
     }
 }
 

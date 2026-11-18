@@ -1,0 +1,124 @@
+{
+  "fill": {
+    "linear-gradient": [
+      "extended-srgb:0.00000,0.75000,0.91000,1.00000",
+      "extended-srgb:0.00000,0.78000,0.70000,1.00000"
+    ]
+  },
+  "groups": [
+    {
+      "name": "Monogram",
+      "layers": [
+        {
+          "image-name": "M.png",
+          "name": "M",
+          "opacity": 1
+        }
+      ],
+      "lighting": "combined",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.45
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": false,
+        "value": 0.5
+      }
+    },
+    {
+      "name": "Lid",
+      "blur-material": 0,
+      "layers": [
+        {
+          "image-name": "rim.svg",
+          "name": "rim",
+          "opacity": 0.8
+        },
+        {
+          "image-name": "lid.svg",
+          "name": "lid",
+          "glass": true,
+          "opacity": 0.12
+        }
+      ],
+      "lighting": "combined",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.85
+      }
+    },
+    {
+      "name": "Food",
+      "layers": [
+        {
+          "image-name": "fish.png",
+          "name": "fish"
+        },
+        {
+          "image-name": "leaf.png",
+          "name": "leaf"
+        },
+        {
+          "image-name": "carrot.png",
+          "name": "carrot"
+        },
+        {
+          "image-name": "grain.png",
+          "name": "grain"
+        }
+      ],
+      "lighting": "individual",
+      "shadow": {
+        "kind": "layer-color",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": false,
+        "value": 0.5
+      }
+    },
+    {
+      "name": "Tray",
+      "layers": [
+        {
+          "image-name": "clips.svg",
+          "name": "clips",
+          "glass": true,
+          "opacity": 0.55
+        },
+        {
+          "image-name": "compartments.svg",
+          "name": "compartments"
+        },
+        {
+          "image-name": "tray.svg",
+          "name": "tray",
+          "opacity": 0.25
+        }
+      ],
+      "lighting": "combined",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.4
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
+      "watchOS"
+    ],
+    "squares": "shared"
+  }
+}
