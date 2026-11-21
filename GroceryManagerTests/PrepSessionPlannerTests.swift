@@ -4,7 +4,7 @@ import XCTest
 final class PrepSessionPlannerTests: XCTestCase {
     private let recipes = [
         PrepRecipeInput(name: "Chicken bowls", instructions: "Preheat the oven to 425°F.\nDice the onion.\nRoast the chicken for 25 minutes.\nServe over rice.", ingredientNames: ["chicken thighs", "onion", "rice"], servings: 4),
-        PrepRecipeInput(name: "Curry", instructions: "Dice the onion and mince the garlic.\nSimmer the chickpeas with tomatoes for 15 minutes.\nStir in spinach.", ingredientNames: ["chickpeas", "onion", "garlic", "spinach", "rice"], servings: 4)
+        PrepRecipeInput(name: "Curry", instructions: "Dice the onion.\nSimmer the chickpeas with tomatoes for 15 minutes.\nStir in spinach.", ingredientNames: ["chickpeas", "onion", "garlic", "spinach", "rice"], servings: 4)
     ]
 
     func testSharedPrepComesFirstAndCoversPerRecipeKnifeWork() {
@@ -34,6 +34,15 @@ final class PrepSessionPlannerTests: XCTestCase {
         XCTAssertEqual(roast.group, simmer.group, "oven and stove steps share a group")
         XCTAssertGreaterThan(plan.estimatedMinutes, 0)
         XCTAssertLessThan(plan.estimatedMinutes, plan.steps.reduce(0) { $0 + $1.minutes }, "parallel steps overlap")
+    }
+
+    func testPartlyCoveredStepIsKept() {
+        // Onion is diced for both recipes up front, but the garlic is only in one: its step stays.
+        let plan = PrepSessionPlanner().plan([
+            PrepRecipeInput(name: "A", instructions: "Dice the onion.", ingredientNames: ["onion"], servings: 1),
+            PrepRecipeInput(name: "B", instructions: "Dice the onion and mince the garlic.", ingredientNames: ["onion", "garlic"], servings: 1)
+        ])
+        XCTAssertTrue(plan.steps.contains { $0.title == "Dice the onion and mince the garlic." }, "\(plan.steps.map(\.title))")
     }
 
     func testSameLaneStepsNeverShareAGroup() {

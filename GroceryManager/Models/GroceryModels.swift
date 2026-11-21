@@ -54,6 +54,9 @@ final class StorageLocation {
 @Model
 final class Ingredient {
     var name: String = ""
+    /// Lemmatised matching key for `name` ("Diced Tomatoes" → "tomato"), filled in before
+    /// every save by `LemmaIndexer`. Empty on rows written by older app versions.
+    var lemmaName: String = ""
     var quantity: Double = 1
     var unit: String = "item"
     var initialQuantity: Double = 1
@@ -92,13 +95,22 @@ final class Ingredient {
         self.expiryDate = expiryDate
         self.location = location
         self.source = source
+        self.lemmaName = IngredientNameMatcher.key(name)
     }
+
+    /// The stored lemma, or a freshly computed one for rows that predate it.
+    var lemmaKey: String { lemmaName.isEmpty ? IngredientNameMatcher.key(name) : lemmaName }
 }
 
 @Model
 final class Recipe {
     var name: String = ""
     var instructions: String = ""
+    /// `[RecipeStep]` as JSON: each step with its lemmatised operations and ingredients.
+    /// Rebuilt by `LemmaIndexer` whenever the instructions or ingredients change.
+    var stepsJSON: Data = Data()
+    /// Fingerprint of the inputs `stepsJSON` was built from, to spot stale or missing data.
+    var stepsSourceHash: String = ""
     /// How many people the ingredient amounts feed. Used to scale planned meals.
     var servings: Int = 2
     var sourceURL: String = ""
@@ -244,6 +256,8 @@ final class GroceryItem {
 @Model
 final class RecipeIngredient {
     var name: String = ""
+    /// Lemmatised matching key for `name`, see `Ingredient.lemmaName`.
+    var lemmaName: String = ""
     var requiredQuantity: Double = 1
     var unit: String = "item"
     /// Preparation note such as "diced" or "room temperature".
@@ -258,6 +272,9 @@ final class RecipeIngredient {
         self.note = note
         self.sortOrder = sortOrder
         self.recipe = recipe
+        self.lemmaName = IngredientNameMatcher.key(name)
     }
+
+    var lemmaKey: String { lemmaName.isEmpty ? IngredientNameMatcher.key(name) : lemmaName }
 }
 

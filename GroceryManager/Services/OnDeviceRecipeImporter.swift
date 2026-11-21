@@ -56,10 +56,12 @@ final class OnDeviceRecipeImporter {
             name: generated.name,
             instructions: generated.instructions,
             ingredients: generated.ingredients.map {
-                DraftRecipeIngredient(
-                    name: $0.name,
+                let cleaned = IngredientLineParser.cleanName($0.name)
+                return DraftRecipeIngredient(
+                    name: cleaned.name,
                     quantity: max($0.quantity, 0),
-                    unit: IngredientLineParser.unitAlias($0.unit) ?? QuantityUnit(rawValue: $0.unit)?.rawValue ?? "item"
+                    unit: IngredientLineParser.unitAlias($0.unit) ?? QuantityUnit(rawValue: $0.unit)?.rawValue ?? "item",
+                    note: cleaned.note
                 )
             }
         )
@@ -85,6 +87,7 @@ final class OnDeviceRecipeImporter {
     @available(iOS 26.0, *)
     @Generable
     struct GeneratedIngredient {
+        @Guide(description: "Just the ingredient, e.g. \"refried beans\" or \"flour tortillas\": no amounts, sizes, packaging or parentheses")
         var name: String
         var quantity: Double
         var unit: String

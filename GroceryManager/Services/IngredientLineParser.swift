@@ -33,17 +33,20 @@ enum IngredientLineParser {
             line.removeSubrange(match)
         }
 
-        // Package size right after the amount: "1 (14 oz) can", "2 (400 g) tins"
-        let packagePattern = #"^\(\s*(\d+(?:\.\d+)?)\s*-?\s*([a-zA-Z .]+?)\s*\)\s*"#
-        if let match = line.range(of: packagePattern, options: .regularExpression) {
-            let inner = String(line[match]).trimmingCharacters(in: CharacterSet(charactersIn: "() "))
-            let pieces = inner.split(separator: " ", maxSplits: 1).map(String.init)
-            if pieces.count == 2, let size = Double(pieces[0]), let sizeUnit = unitAlias(pieces[1]) {
+        // Package size right after the amount: "1 (14 oz) can", "2 (14.5-ounce) tins". A
+        // parenthetical that isn't a weight or volume ("6 (12 inch) tortillas") is just a note.
+        if let regex = try? NSRegularExpression(pattern: #"^\(\s*(\d+(?:\.\d+)?|\d+/\d+)\s*-?\s*([a-zA-Z .]+?)\s*\)\s*"#),
+           let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
+           let whole = Range(match.range, in: line),
+           let sizeRange = Range(match.range(at: 1), in: line),
+           let unitRange = Range(match.range(at: 2), in: line) {
+            let inner = String(line[whole]).trimmingCharacters(in: CharacterSet(charactersIn: "() "))
+            if let size = number(from: String(line[sizeRange])), let sizeUnit = unitAlias(String(line[unitRange])) {
                 quantity = (quantity ?? 1) * size
                 unit = sizeUnit
-                note.append(inner)
-                line.removeSubrange(match)
             }
+            note.append(inner)
+            line.removeSubrange(whole)
         }
 
         // Unit word(s) after the amount.
@@ -63,13 +66,10 @@ enum IngredientLineParser {
         }
         if words.first?.lowercased() == "of" { words.removeFirst() }
 
-        var rest = words.joined(separator: " ")
-        // Trailing parenthetical → note
-        if let match = rest.range(of: #"\s*\(([^)]*)\)\s*$"#, options: .regularExpression) {
-            let inner = String(rest[match]).trimmingCharacters(in: CharacterSet(charactersIn: "() "))
-            if !inner.isEmpty { note.append(inner) }
-            rest.removeSubrange(match)
-        }
+        // Parentheticals anywhere → note
+        let cleaned = stripParentheticals(words.joined(separator: " "))
+        var rest = cleaned.text
+        note += cleaned.notes
         // "name, note"
         var name = rest
         if let comma = rest.firstIndex(of: ",") {
@@ -100,6 +100,63 @@ enum IngredientLineParser {
             name: name.isEmpty ? rawLine.trimmingCharacters(in: .whitespaces) : name,
             note: note.joined(separator: ", ")
         )
+    }
+
+    /// Moves every "(…)" into notes and drops unmatched brackets, so names like
+    /// "flour tortillas (12 inches" or "16 ounces) refried beans" come out clean.
+    static func stripParentheticals(_ text: String) -> (text: String, notes: [String]) {
+        var output = ""
+        var notes: [String] = []
+        var depth = 0
+        var current = ""
+        for character in text {
+            switch character {
+            case "(", "[":
+                if depth == 0 { current = "" } else { current.append(character) }
+                depth += 1
+            case ")", "]":
+                if depth == 0 {
+                    // Unmatched close: everything before it was a parenthetical that lost its "(".
+                    let orphan = output.trimmingCharacters(in: .whitespaces)
+                    if !orphan.isEmpty, orphan.first?.isNumber == true {
+                        notes.append(orphan)
+                        output = ""
+                    }
+                    continue
+                }
+                depth -= 1
+                if depth == 0 {
+                    let inner = current.trimmingCharacters(in: .whitespaces)
+                    if !inner.isEmpty { notes.append(inner) }
+                    output.append(" ")
+                } else {
+                    current.append(character)
+                }
+            default:
+                if depth == 0 { output.append(character) } else { current.append(character) }
+            }
+        }
+        // Unclosed "(": what follows it is the note.
+        let tail = current.trimmingCharacters(in: .whitespaces)
+        if depth > 0, !tail.isEmpty { notes.append(tail) }
+        let text = output
+            .replacingOccurrences(of: #"\s+"#, with: " ", options: .regularExpression)
+            .trimmingCharacters(in: CharacterSet.whitespaces.union(CharacterSet(charactersIn: ",;-")))
+        return (text, notes)
+    }
+
+    /// Cleans an ingredient name that came from somewhere other than `parse`, such as the
+    /// on-device model: drops parentheticals and leading container words into the note.
+    static func cleanName(_ rawName: String) -> (name: String, note: String) {
+        var (text, notes) = stripParentheticals(HTMLText.decode(rawName))
+        var words = text.split(separator: " ").map(String.init)
+        if words.count > 1, let container = containerWord(words[0]) {
+            notes.append(container)
+            words.removeFirst()
+            if words.first?.lowercased() == "of" { words.removeFirst() }
+        }
+        text = words.joined(separator: " ")
+        return (text.isEmpty ? rawName.trimmingCharacters(in: .whitespaces) : text, notes.joined(separator: ", "))
     }
 
     // MARK: Helpers
@@ -169,7 +226,7 @@ enum IngredientLineParser {
         return map
     }()
 
-    private static let containers = ["can", "cans", "tin", "tins", "jar", "jars", "package", "packages", "pkg", "packet", "packets", "bottle", "bottles", "bunch", "bunches", "clove", "cloves", "slice", "slices", "stalk", "stalks", "sprig", "sprigs", "head", "heads", "piece", "pieces", "ear", "ears", "fillet", "fillets", "stick", "sticks", "sheet", "sheets", "whole", "box", "boxes", "bag", "bags", "handful", "scoop", "scoops", "knob", "block", "cube", "cubes", "leaf", "leaves", "strip", "strips", "rack", "loaf", "container"]
+    private static let containers = ["can", "cans", "tin", "tins", "jar", "jars", "package", "packages", "pkg", "packet", "packets", "bottle", "bottles", "bunch", "bunches", "clove", "cloves", "slice", "slices", "stalk", "stalks", "sprig", "sprigs", "head", "heads", "piece", "pieces", "ear", "ears", "fillet", "fillets", "stick", "sticks", "sheet", "sheets", "whole", "box", "boxes", "bag", "bags", "handful", "scoop", "scoops", "knob", "block", "cube", "cubes", "leaf", "leaves", "strip", "strips", "rack", "loaf", "container", "envelope", "envelopes", "pouch", "pouches", "carton", "cartons", "tube", "tubes", "sachet", "sachets", "tub", "tubs"]
 
     static func containerWord(_ word: String) -> String? {
         let cleaned = word.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".,;:"))

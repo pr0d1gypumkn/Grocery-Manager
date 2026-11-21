@@ -26,6 +26,7 @@
 		A10000000000000000000011 /* RecipeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* RecipeViewModel.swift */; };
 		A10000000000000000000012 /* RecipeViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* RecipeViews.swift */; };
 		A10000000000000000000013 /* PantryMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* PantryMatcher.swift */; };
+		A1000000000000000000F001 /* StepLemmatizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000F001 /* StepLemmatizer.swift */; };
 		A10000000000000000000014 /* UnitConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* UnitConversion.swift */; };
 		A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* OnDeviceRecipeImporter.swift */; };
 		A10000000000000000000016 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000016 /* Persistence.swift */; };
@@ -60,6 +61,7 @@
 		A79BA043D70D3B38BB149911 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79BA043D70D3B38BB149911 /* SettingsView.swift */; };
 		A79CA0776D31E67E4CC2B000 /* DataTransferTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79CA0776D31E67E4CC2B000 /* DataTransferTests.swift */; };
 		A7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift */; };
+		A1000000000000000000F002 /* StepLemmatizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000F002 /* StepLemmatizerTests.swift */; };
 		A7B51A5D602B561D11921259 /* Entitlements.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B51A5D602B561D11921259 /* Entitlements.swift */; };
 		A7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift */; };
 		A7C280736E823EEBD42331E1 /* HouseholdSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C280736E823EEBD42331E1 /* HouseholdSync.swift */; };
@@ -110,6 +112,7 @@
 		B10000000000000000000011 /* RecipeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeViewModel.swift; sourceTree = "<group>"; };
 		B10000000000000000000012 /* RecipeViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeViews.swift; sourceTree = "<group>"; };
 		B10000000000000000000013 /* PantryMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PantryMatcher.swift; sourceTree = "<group>"; };
+		B1000000000000000000F001 /* StepLemmatizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepLemmatizer.swift; sourceTree = "<group>"; };
 		B10000000000000000000014 /* UnitConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversion.swift; sourceTree = "<group>"; };
 		B10000000000000000000015 /* OnDeviceRecipeImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceRecipeImporter.swift; sourceTree = "<group>"; };
 		B10000000000000000000016 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -144,6 +147,7 @@
 		F79BA043D70D3B38BB149911 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F79CA0776D31E67E4CC2B000 /* DataTransferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTransferTests.swift; sourceTree = "<group>"; };
 		F7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepSessionPlannerTests.swift; sourceTree = "<group>"; };
+		B1000000000000000000F002 /* StepLemmatizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepLemmatizerTests.swift; sourceTree = "<group>"; };
 		F7B51A5D602B561D11921259 /* Entitlements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entitlements.swift; sourceTree = "<group>"; };
 		F7B52F8C1E59DAF012B6EC8E /* PrepSessionPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepSessionPlanner.swift; sourceTree = "<group>"; };
 		F7C280736E823EEBD42331E1 /* HouseholdSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdSync.swift; sourceTree = "<group>"; };
@@ -292,6 +296,7 @@
 				F7B51A5D602B561D11921259 /* Entitlements.swift */,
 				B10000000000000000000008 /* NotificationManager.swift */,
 				B10000000000000000000013 /* PantryMatcher.swift */,
+				B1000000000000000000F001 /* StepLemmatizer.swift */,
 				B10000000000000000000014 /* UnitConversion.swift */,
 				B10000000000000000000015 /* OnDeviceRecipeImporter.swift */,
 				B10000000000000000000017 /* GroceryAppIntents.swift */,
@@ -307,6 +312,7 @@
 				F795C39842009DA032607D65 /* PlusFeatureTests.swift */,
 				F79CA0776D31E67E4CC2B000 /* DataTransferTests.swift */,
 				F7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift */,
+				B1000000000000000000F002 /* StepLemmatizerTests.swift */,
 				F7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift */,
 				F7C58AFA2C6293FE34312179 /* EntitlementTests.swift */,
 				F78C4F827A4514767FEAB90C /* PantryDeductionTests.swift */,
@@ -460,6 +466,7 @@
 				A1000000000000000000001B /* MealPlanView.swift in Sources */,
 				A1000000000000000000001A /* MealPlanViewModel.swift in Sources */,
 				A10000000000000000000013 /* PantryMatcher.swift in Sources */,
+				A1000000000000000000F001 /* StepLemmatizer.swift in Sources */,
 				A10000000000000000000014 /* UnitConversion.swift in Sources */,
 				A10000000000000000000015 /* OnDeviceRecipeImporter.swift in Sources */,
 				A10000000000000000000016 /* Persistence.swift in Sources */,
@@ -475,6 +482,7 @@
 				A795C39842009DA032607D65 /* PlusFeatureTests.swift in Sources */,
 				A79CA0776D31E67E4CC2B000 /* DataTransferTests.swift in Sources */,
 				A7A0CEC7D902FA7070762B1C /* PrepSessionPlannerTests.swift in Sources */,
+				A1000000000000000000F002 /* StepLemmatizerTests.swift in Sources */,
 				A7E66D6C7ED86CD55EC68D9A /* RecipeImportTests.swift in Sources */,
 				A7C58AFA2C6293FE34312179 /* EntitlementTests.swift in Sources */,
 				A78C4F827A4514767FEAB90C /* PantryDeductionTests.swift in Sources */,
