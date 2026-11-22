@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.1.2 (2) — 2026-11-21
+## 1.1.2 (3) — 2026-11-22
 
-Changes since 1.1.1 (3). Build 2 replaces build 1 (see "Build 2" below).
+Changes since 1.1.1 (3). Build 3 replaces builds 1 and 2 (see "Build 2" and "Build 3" below).
 
 ### New
 - **Household sharing is live.** The app now connects to the Mealy server (mealy.pumpkinpatch.work), so Plus subscribers can share plans, lists and the pantry with their household. Subscribers are signed in automatically from their purchase; household members join with Sign in with Apple.
@@ -39,3 +39,8 @@ Changes since 1.1.1 (3). Build 2 replaces build 1 (see "Build 2" below).
 - Grocery checkout hidden in the app and on the web, and removed from the privacy policy.
 - Yearly plan description no longer says "2 months free" (local StoreKit test prices now $2.99/month and $24.99/year to match App Store Connect).
 - "Save %" badge fix and plan button styling (above).
+
+### Build 3
+- Storage on iPad and the open iPhone Duo: locations stack in two independent columns, so a short card no longer leaves a gap beside a tall one.
+- Storage picks one or two columns from the available width instead of the device type, so the iPhone Duo's inner screen gets two columns and its outer screen one.
+- App Store screenshots for iPhone 6.9", iPad 13" and iPhone Duo (App Store/Screenshots/).
