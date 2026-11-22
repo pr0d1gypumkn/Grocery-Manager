@@ -1,8 +1,8 @@
 # Mealy Privacy Policy
 
-_Last updated November 18, 2026_
+_Last updated November 21, 2026_
 
-Host this page publicly and enter its URL as the **Privacy Policy URL** in App Store Connect. Keep it in sync with the in-app copy in `GroceryManager/Views/PaywallView.swift` (`PrivacyPolicyView`).
+Hosted at https://mealy.pumpkinpatch.work/privacy (`web/src/app/privacy/page.tsx`); enter that as the **Privacy Policy URL** in App Store Connect. Keep it in sync with that page and the in-app copy in `GroceryManager/Views/PaywallView.swift` (`PrivacyPolicyView`).
 
 ## The short version
 
@@ -29,9 +29,23 @@ Some Plus features, such as household sharing, use our server. There's no separa
 
 We store an anonymous Apple user ID, your subscription status, your email only if you choose to share it through Sign in with Apple, and the household data you share. We use these only to provide those features. You can delete all of it at any time in **Settings ▸ Account ▸ Delete account**. This also revokes Mealy's access to your Apple ID.
 
+## Requests to our server
+
+While you're signed in, a few Plus features ask our server for help:
+
+- Recipe ideas send the names of your saved recipes, pantry items and diet preferences.
+- Social import sends the post's link.
+- Grocery checkout sends the names and amounts on your list.
+
+These are used only to answer that request and aren't stored.
+
+## Web accounts
+
+If you use Mealy on the web, you sign in with a one-time code sent to your email. We store your email address to sign you in. Web subscriptions are handled by Stripe; we never see your full card details.
+
 ## Purchases
 
-Subscriptions are handled by Apple. We receive a signed confirmation of your subscription from Apple, never your payment details.
+App Store subscriptions are handled by Apple. We receive a signed confirmation of your subscription from Apple, never your payment details.
 
 ## Notifications
 

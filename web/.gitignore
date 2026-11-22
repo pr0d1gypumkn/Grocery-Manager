@@ -2,3 +2,5 @@ node_modules
 .next
 .env
 *.tsbuildinfo
+.env.production
+deploy/deploy.env

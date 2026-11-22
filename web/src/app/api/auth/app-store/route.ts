@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
   if (transaction.bundleId !== appleBundleID() || !PRODUCT_IDS.has(transaction.productId)) {
     return NextResponse.json({ error: "That purchase isn't for Mealy." }, { status: 401 });
   }
-  if (transaction.environment === "Sandbox" && process.env.APPLE_ALLOW_SANDBOX !== "1") {
+  // App Review and TestFlight purchase in the sandbox, even against the production server, so
+  // sandbox purchases are accepted unless explicitly turned off (APPLE_ALLOW_SANDBOX=0).
+  if (transaction.environment === "Sandbox" && process.env.APPLE_ALLOW_SANDBOX === "0") {
     return NextResponse.json({ error: "Sandbox purchases aren't accepted by this server." }, { status: 401 });
   }
 

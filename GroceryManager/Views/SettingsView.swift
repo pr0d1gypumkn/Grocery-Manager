@@ -65,12 +65,12 @@ struct SettingsView: View {
             } message: {
                 Text(message ?? "")
             }
-            .confirmationDialog("Replace everything with demo data?", isPresented: $confirmingReset, titleVisibility: .visible) {
-                Button("Replace with demo data", role: .destructive) {
+            .confirmationDialog("Replace everything with sample data?", isPresented: $confirmingReset, titleVisibility: .visible) {
+                Button("Replace with sample data", role: .destructive) {
                     DemoData.wipe(modelContext)
                     DemoData.load(into: modelContext)
                     settings.didSeedDemoData = true
-                    message = "Demo data loaded."
+                    message = "Sample data loaded."
                 }
             } message: {
                 Text("This deletes your recipes, plan, list and stock on this device. Export first if you want to keep them.")
@@ -194,11 +194,11 @@ struct SettingsView: View {
             Button("Export grocery list (CSV)", systemImage: "tablecells") { export(.groceriesCSV) }
             Button("Export pantry (CSV)", systemImage: "tablecells") { export(.pantryCSV) }
             Button("Import…", systemImage: "square.and.arrow.down") { showingImporter = true }
-            Button("Load demo data", systemImage: "wand.and.sparkles") {
+            Button("Load sample data", systemImage: "wand.and.sparkles") {
                 if DemoData.isEmpty(modelContext) {
                     DemoData.load(into: modelContext)
                     settings.didSeedDemoData = true
-                    message = "Demo data loaded."
+                    message = "Sample data loaded."
                 } else {
                     confirmingReset = true
                 }

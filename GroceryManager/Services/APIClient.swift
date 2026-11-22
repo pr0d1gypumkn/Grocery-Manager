@@ -10,8 +10,9 @@ struct APIClient: Sendable {
     static let shared = APIClient()
 
     /// The backend for this build, from the `MEALY_API_BASE_URL` build setting (Info.plist
-    /// `MealyAPIBaseURL`). Release builds leave it empty until the server is deployed, and
-    /// every server-backed feature hides itself while it is `nil`.
+    /// `MealyAPIBaseURL`), https://mealy.pumpkinpatch.work for Debug and Release. Debug builds can
+    /// point elsewhere (e.g. http://localhost:3000) with the Server URL field in Settings ▸ Account.
+    /// Every server-backed feature hides itself if this is `nil` (setting cleared).
     var baseURL: URL? {
         #if DEBUG
         if let override = UserDefaults.standard.string(forKey: "api.baseURL"), let url = URL(string: override) {
@@ -52,6 +53,10 @@ struct APIClient: Sendable {
         try await request("POST", path, body: try JSONEncoder.api.encode(body), authorized: authorized)
     }
 
+    func patch<T: Decodable, B: Encodable>(_ path: String, body: B, as type: T.Type) async throws -> T {
+        try await request("PATCH", path, body: try JSONEncoder.api.encode(body), authorized: true)
+    }
+
     func delete<T: Decodable>(_ path: String, as type: T.Type) async throws -> T {
         try await request("DELETE", path, body: Optional<Data>.none, authorized: true)
     }
@@ -63,7 +68,8 @@ struct APIClient: Sendable {
         request.httpBody = body
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        if let token = await AccountSession.shared.accessToken {
+        let token = await AccountSession.shared.accessToken
+        if let token {
             // Also sent on sign-in calls, so the server links an Apple ID to the current user.
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         } else if authorized {
@@ -71,6 +77,12 @@ struct APIClient: Sendable {
         }
         let (data, response) = try await URLSession.shared.data(for: request)
         let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+        if status == 401, authorized, let token {
+            // The server no longer accepts this session (expired, revoked, account deleted, or
+            // issued by another server). Drop it so the app shows the signed-out state.
+            await AccountSession.shared.sessionRejected(token: token)
+            throw APIError.notSignedIn
+        }
         guard (200..<300).contains(status) else {
             let message = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? ""
             throw APIError.http(status, message)
@@ -111,18 +123,45 @@ final class AccountSession {
     /// Mirrors the Keychain so SwiftUI observes sign-in changes.
     private var cachedToken: String? = Keychain.read("account.accessToken")
 
+    /// The server that issued the session. A token is only valid against that server.
+    /// Changes only together with `cachedToken`, which is what SwiftUI observes.
+    private var sessionServer: String? {
+        get { defaults.string(forKey: "account.serverURL") }
+        set { defaults.set(newValue, forKey: "account.serverURL") }
+    }
+
+    /// True while recovering from a rejected session, so a second 401 can't loop.
+    @ObservationIgnored private var isRecoveringSession = false
+
     init() {
-        // Move a token saved by older builds out of UserDefaults.
-        if let legacy = defaults.string(forKey: "account.accessToken") {
-            if cachedToken == nil { accessToken = legacy }
-            defaults.removeObject(forKey: "account.accessToken")
+        // Older builds kept the token in UserDefaults and didn't record which server issued it
+        // (e.g. a localhost demo account). Those sessions can't be trusted, so start signed out.
+        defaults.removeObject(forKey: "account.accessToken")
+        if cachedToken != nil, sessionServer == nil || (!Self.isDebugBuild && sessionServer != Self.currentServer) {
+            clearSession()
         }
     }
 
+    private static var currentServer: String? { APIClient.shared.baseURL?.absoluteString }
+
+    private static var isDebugBuild: Bool {
+        #if DEBUG
+        true
+        #else
+        false
+        #endif
+    }
+
+    /// The session token, only while the app talks to the server that issued it. (Debug builds
+    /// can switch servers in Settings; switching back restores that server's session.)
     var accessToken: String? {
-        get { cachedToken }
+        get {
+            guard let cachedToken, sessionServer != nil, sessionServer == Self.currentServer else { return nil }
+            return cachedToken
+        }
         set {
             cachedToken = newValue
+            sessionServer = newValue == nil ? nil : Self.currentServer
             if let newValue { Keychain.write(newValue, for: "account.accessToken") } else { Keychain.delete("account.accessToken") }
         }
     }
@@ -140,10 +179,27 @@ final class AccountSession {
     var isSignedIn: Bool { APIClient.isConfigured && accessToken != nil }
 
     func signOut() {
+        clearSession()
+        Task { await EntitlementService.shared.refresh() }
+    }
+
+    private func clearSession() {
         accessToken = nil
         userID = nil
         email = nil
-        Task { await EntitlementService.shared.refresh() }
+    }
+
+    /// Called when the server answers 401 to a signed-in request. Ignores a token that was
+    /// already replaced (a sign-in finished while the request was in flight). Subscribers are
+    /// then signed back in silently from their purchase.
+    func sessionRejected(token: String) async {
+        guard cachedToken == token else { return }
+        clearSession()
+        guard !isRecoveringSession else { return }
+        isRecoveringSession = true
+        defer { isRecoveringSession = false }
+        await signInFromPurchaseIfNeeded()
+        await EntitlementService.shared.refresh()
     }
 
     struct SessionResponse: Decodable { var token: String; var userId: String; var email: String? }

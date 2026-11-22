@@ -23,7 +23,8 @@ enum Feature: String, CaseIterable, Codable, Identifiable {
     @MainActor
     var isAvailable: Bool {
         switch self {
-        // No real price source yet; the only data would be made-up demo prices.
+        // The server has no price partner configured yet (FLIPP/INSTACART/... keys), so it would
+        // only return mock prices. Turn on once a real source is live; App Review rejects demo data.
         case .priceAwareShopping: false
         // Needs the Mealy server for accounts and sync.
         case .householdSharing: APIClient.isConfigured

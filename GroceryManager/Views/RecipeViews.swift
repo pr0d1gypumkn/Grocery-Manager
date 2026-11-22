@@ -688,20 +688,8 @@ struct RecipeFormView: View {
                         ForEach($ingredients) { $ingredient in
                             HStack {
                                 TextField("Ingredient", text: $ingredient.name)
-                                TextField("Amount", value: $ingredient.quantity, format: .number)
-                                    .keyboardType(.decimalPad)
-                                    .frame(width: 72)
-                                Stepper(value: $ingredient.quantity, in: 0...999, step: 0.5) {
-                                    Text(ingredient.quantity.formatted(.number.precision(.fractionLength(0...2))))
-                                        .frame(minWidth: 32)
-                                }
+                                QuantityField(quantity: $ingredient.quantity, unit: $ingredient.unit, showsStepper: false)
                             }
-                            Picker("Unit", selection: $ingredient.unit) {
-                                ForEach(QuantityUnit.allCases, id: \.self) { unit in
-                                    Text(unit.rawValue).tag(unit.rawValue)
-                                }
-                            }
-                            .pickerStyle(.menu)
                         }
                         .onDelete { ingredients.remove(atOffsets: $0) }
                     }

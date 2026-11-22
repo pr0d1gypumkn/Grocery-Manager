@@ -91,7 +91,7 @@ final class SubscriptionStore {
             if AccountSession.shared.isSignedIn {
                 struct Patch: Encodable { var appleAppAccountToken: String }
                 struct Reply: Decodable { var ok: Bool }
-                _ = try? await APIClient.shared.post("/api/account", body: Patch(appleAppAccountToken: token.uuidString), as: Reply.self)
+                _ = try? await APIClient.shared.patch("/api/account", body: Patch(appleAppAccountToken: token.uuidString), as: Reply.self)
             }
             let result = try await product.purchase(options: [.appAccountToken(token)])
             switch result {
