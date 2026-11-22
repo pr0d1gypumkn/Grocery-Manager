@@ -1,0 +1,9 @@
+{
+  "id" : "f56adaa4-fbf9-4014-8bfb-f7817bb176af",
+  "targets" : [
+    {
+      "id" : "1941b674-fc97-42f4-85cb-e936b28e1a20",
+      "name" : "GroceryManager"
+    }
+  ]
+}

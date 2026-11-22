@@ -17,7 +17,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <span className="spacer" />
           {user ? (
             <form action="/api/auth/logout" method="post" className="inline">
-              <span className="muted">{user.email}</span>
+              <span className="muted">{user.email ?? "Signed in with Apple"}</span>
               <button className="small" type="submit">Sign out</button>
             </form>
           ) : (

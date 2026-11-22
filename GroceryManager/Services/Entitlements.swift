@@ -18,6 +18,25 @@ enum Feature: String, CaseIterable, Codable, Identifiable {
     /// The lowest tier that unlocks the feature.
     var tier: Tier { .plus }
 
+    /// Whether this build can actually deliver the feature. Unavailable features are not
+    /// sold, not shown on the paywall, and never unlock, so nothing paid is a placeholder.
+    @MainActor
+    var isAvailable: Bool {
+        switch self {
+        // The server has no price partner configured yet (FLIPP/INSTACART/... keys), so it would
+        // only return mock prices. Turn on once a real source is live; App Review rejects demo data.
+        case .priceAwareShopping: false
+        // Needs the Mealy server for accounts and sync.
+        case .householdSharing: APIClient.isConfigured
+        // Work on-device; the server only improves them when present.
+        case .automaticPlanning, .recipeSuggestions, .socialImport, .checkoutLinks: true
+        }
+    }
+
+    /// The features this build sells, in display order.
+    @MainActor
+    static var available: [Feature] { allCases.filter(\.isAvailable) }
+
     var title: String {
         switch self {
         case .priceAwareShopping: "Price-aware shopping"
@@ -32,11 +51,11 @@ enum Feature: String, CaseIterable, Codable, Identifiable {
     var summary: String {
         switch self {
         case .priceAwareShopping: "See what your list will cost, plan around this week's flyer prices, and set a weekly budget."
-        case .automaticPlanning: "Get a full week planned from your tastes, schedule, pantry and budget. Swap any meal."
+        case .automaticPlanning: "Get a full week planned from your recipes, tastes, pantry and household. Swap any meal."
         case .recipeSuggestions: "Discover recipes you haven't saved yet, matched to your tastes and what's in the pantry."
         case .socialImport: "Pull recipes out of TikTok, Instagram and YouTube links, screenshots, photos and handwritten cards."
         case .householdSharing: "Share plans, lists and the pantry with your household in real time, with portions per person."
-        case .checkoutLinks: "Send your list to Instacart, PC Express, Walmart and more for delivery or pickup."
+        case .checkoutLinks: "Open your list in Instacart, PC Express, Walmart and more to shop for delivery or pickup."
         }
     }
 
@@ -172,10 +191,10 @@ final class EntitlementService {
     }
 
     var tier: Tier { snapshot.tier }
-    var isPlus: Bool { Feature.allCases.contains { hasFeature($0) } }
+    var isPlus: Bool { EntitlementResolver.hasFeature(.automaticPlanning, snapshot: snapshot) }
 
     func hasFeature(_ feature: Feature) -> Bool {
-        EntitlementResolver.hasFeature(feature, snapshot: snapshot)
+        feature.isAvailable && EntitlementResolver.hasFeature(feature, snapshot: snapshot)
     }
 
     /// Re-asks every provider and keeps the most generous answer.
@@ -184,7 +203,12 @@ final class EntitlementService {
         for provider in providers {
             if let result = await provider.currentSnapshot() { results.append(result) }
         }
+        #if DEBUG
         if let override = debugOverride { results.append(override) }
+        #else
+        // A demo unlock saved by a debug build must never carry into a shipped build.
+        debugOverride = nil
+        #endif
         let merged = EntitlementResolver.merge(results)
         apply(merged)
         lastRefresh = .now

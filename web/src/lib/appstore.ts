@@ -16,6 +16,7 @@ export interface DecodedTransaction {
   revocationDate?: number;
   appAccountToken?: string;
   environment?: string;
+  bundleId?: string;
 }
 
 export interface DecodedRenewalInfo {
@@ -44,7 +45,13 @@ export async function verifyAppleJWS<T>(jws: string, options: { allowUnverified?
   const certs = chain.map((b64) => new X509Certificate(Buffer.from(b64, "base64")));
   const root = certs[certs.length - 1];
   const rootTrusted = APPLE_ROOT_FINGERPRINTS.has(fingerprint(root));
-  const chainValid = certs.every((cert, index) => index === certs.length - 1 || cert.checkIssued(certs[index + 1]));
+  const now = Date.now();
+  const chainValid = certs.every((cert, index) => {
+    const withinValidity = new Date(cert.validFrom).getTime() <= now && now <= new Date(cert.validTo).getTime();
+    if (index === certs.length - 1) return withinValidity && cert.verify(cert.publicKey);
+    const issuer = certs[index + 1];
+    return withinValidity && cert.checkIssued(issuer) && cert.verify(issuer.publicKey);
+  });
   if (!(rootTrusted && chainValid) && !options.allowUnverified) {
     throw new Error("Apple certificate chain is not trusted");
   }

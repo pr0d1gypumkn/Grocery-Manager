@@ -2,7 +2,7 @@
 export async function sendCodeEmail(email: string, code: string): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.log(`[mail] sign-in code for ${email}: ${code}`);
+    if (process.env.NODE_ENV !== "production") console.log(`[mail] sign-in code for ${email}: ${code}`);
     return false;
   }
   const response = await fetch("https://api.resend.com/emails", {

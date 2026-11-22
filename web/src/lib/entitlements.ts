@@ -73,7 +73,17 @@ export async function entitlementFor(userId: string): Promise<Entitlement> {
 }
 
 export async function hasFeature(userId: string, feature: Feature): Promise<boolean> {
-  return entitlementHasFeature(await entitlementFor(userId), feature);
+  if (entitlementHasFeature(await entitlementFor(userId), feature)) return true;
+  // Members of someone else's household share through the owner's plan; they don't need
+  // Plus themselves. This covers sharing only, not the owner's other Plus features.
+  if (feature === "household_sharing") {
+    const membership = await prisma.householdMember.findFirst({
+      where: { userId, household: { ownerId: { not: userId } } },
+      select: { household: { select: { ownerId: true } } },
+    });
+    if (membership) return entitlementHasFeature(await entitlementFor(membership.household.ownerId), feature);
+  }
+  return false;
 }
 
 export class FeatureLockedError extends Error {

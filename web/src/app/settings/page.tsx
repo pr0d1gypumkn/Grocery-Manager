@@ -32,7 +32,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     const { redirect } = await import("next/navigation");
     if (!target) { redirect("/settings?error=No+household+has+that+code"); return; }
     await prisma.householdMember.deleteMany({ where: { userId: user.id, householdId: { not: target.id } } });
-    await prisma.householdMember.upsert({ where: { householdId_userId: { householdId: target.id, userId: user.id } }, update: {}, create: { householdId: target.id, userId: user.id, name: user.email.split("@")[0] } });
+    await prisma.householdMember.upsert({ where: { householdId_userId: { householdId: target.id, userId: user.id } }, update: {}, create: { householdId: target.id, userId: user.id, name: user.email?.split("@")[0] ?? "Member" } });
     redirect("/settings?joined=1");
   }
 
@@ -47,7 +47,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     const profile = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
     let customerId = profile.stripeCustomerId;
     if (!customerId) {
-      const customer = await stripe.customers.create({ email: profile.email, metadata: { userId: user.id } });
+      const customer = await stripe.customers.create({ email: profile.email ?? undefined, metadata: { userId: user.id } });
       customerId = customer.id;
       await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } });
     }

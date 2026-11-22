@@ -29,7 +29,7 @@ struct LaunchScreenView: View {
                 container
                     .padding(.top, boxSize.height) // room for the open lid above the tray
 
-                Text("Grocery Manager")
+                Text("Mealy")
                     .font(.system(size: 30, weight: .heavy, design: .rounded))
                     .foregroundStyle(.white)
                     .tracking(0.4)
@@ -40,7 +40,7 @@ struct LaunchScreenView: View {
         }
         .task { await run() }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Grocery Manager")
+        .accessibilityLabel("Mealy")
     }
 
     // MARK: - Background

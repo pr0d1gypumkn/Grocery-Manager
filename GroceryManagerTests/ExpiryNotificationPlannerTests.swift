@@ -67,12 +67,27 @@ final class ExpiryNotificationPlannerTests: XCTestCase {
 
         let rows = LocationShelfLayout.rows(for: ingredients)
 
-        XCTAssertEqual(rows.count, 3)
+        XCTAssertEqual(rows.count, 1)
         XCTAssertEqual(rows[0].count, 2)
         XCTAssertEqual(rows[0][0]?.name, "Milk")
         XCTAssertNil(rows[0][1])
-        XCTAssertNil(rows[1][0])
-        XCTAssertNil(rows[2][1])
+    }
+
+    func testStorageLocationShelfRowsShowEveryItem() {
+        let ingredients = (1...9).map { Ingredient(name: "Item \($0)", category: "Dairy") }
+
+        let rows = LocationShelfLayout.rows(for: ingredients)
+
+        XCTAssertEqual(rows.count, 5)
+        XCTAssertEqual(rows.flatMap { $0 }.compactMap { $0 }.count, 9)
+    }
+
+    func testStorageLocationShelfRowsShowOnePlaceholderRowWhenEmpty() {
+        let rows = LocationShelfLayout.rows(for: [])
+
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows[0].count, 2)
+        XCTAssertNil(rows[0][0])
     }
 
     func testPersistenceUsesCloudKitSyncConfiguration() {

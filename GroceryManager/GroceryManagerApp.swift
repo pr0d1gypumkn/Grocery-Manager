@@ -6,6 +6,10 @@ struct GroceryManagerApp: App {
     private let sharedModelContainer = PersistenceController.shared
     @State private var isLaunching = true
 
+    init() {
+        LemmaIndexer.install(on: sharedModelContainer)
+    }
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -21,7 +25,10 @@ struct GroceryManagerApp: App {
             }
             .task {
                 seedDemoDataIfNeeded()
+                LemmaIndexer.backfill(sharedModelContainer.mainContext)
                 await EntitlementService.shared.refresh()
+                await AccountSession.shared.signInFromPurchaseIfNeeded()
+                if AccountSession.shared.isSignedIn { await HouseholdSyncService.shared.refreshInvite() }
                 await IntentStore.refreshSiriIndex()
             }
         }

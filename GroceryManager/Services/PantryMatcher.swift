@@ -80,8 +80,9 @@ struct PantryMatcher {
     }
 
     private func available(_ name: String, unit: String, in inventory: [Ingredient], now: Date) -> Double {
-        inventory
-            .filter { $0.expiryDate >= now && IngredientNameMatcher.matches($0.name, name) }
+        let key = IngredientNameMatcher.key(name)
+        return inventory
+            .filter { $0.expiryDate >= now && $0.lemmaKey == key }
             .reduce(0) { total, item in
                 total + (UnitConverter.convert(item.quantity, from: item.unit, to: unit) ?? 0)
             }
@@ -110,11 +111,17 @@ enum IngredientNameMatcher {
     }
 
     static func key(_ name: String) -> String {
-        let tokens = tokenize(name)
-            .map { aliases[$0] ?? $0 }
+        lemmaTokens(name)
             .filter { !preparationWords.contains($0) }
+            .joined(separator: " ")
+    }
 
-        return tokens.joined(separator: " ")
+    /// Lemmatised, alias-resolved tokens of any text (an ingredient name or a whole recipe
+    /// step), without dropping preparation words. Multi-word aliases expand to several tokens.
+    static func lemmaTokens(_ text: String) -> [String] {
+        tokenize(text).flatMap { token in
+            (aliases[token] ?? token).split(separator: " ").map(String.init)
+        }
     }
 
     private static func tokenize(_ name: String) -> [String] {

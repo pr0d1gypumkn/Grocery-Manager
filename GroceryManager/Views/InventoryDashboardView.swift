@@ -234,7 +234,7 @@ struct InventoryDashboardView: View {
         .contextMenu {
             Button("Use one", systemImage: "minus.circle") { viewModel.adjust(ingredient, by: -step(for: ingredient)) }
             Button("Add one", systemImage: "plus.circle") { viewModel.adjust(ingredient, by: step(for: ingredient)) }
-            Button("Refill to \(ingredient.initialQuantity.quantityText) \(ingredient.unit)", systemImage: "arrow.clockwise") {
+            Button("Refill to \(ingredient.initialQuantity.quantityText(unit: ingredient.unit))", systemImage: "arrow.clockwise") {
                 viewModel.refill(ingredient)
             }
             Divider()
@@ -289,7 +289,7 @@ private struct StockRow: View {
                         .font(.body.weight(.semibold))
                         .lineLimit(1)
                     Spacer()
-                    Text("\(ingredient.quantity.quantityText) \(ingredient.unit)")
+                    Text(ingredient.quantity.quantityText(unit: ingredient.unit))
                         .font(.subheadline.weight(.medium))
                         .monospacedDigit()
                         .foregroundStyle(isLow ? .orange : .secondary)

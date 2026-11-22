@@ -28,6 +28,35 @@ final class RecipeImportTests: XCTestCase {
         XCTAssertTrue(line.note.contains("14 oz"))
     }
 
+    func testParentheticalsNeverLeakIntoNames() {
+        let tortillas = IngredientLineParser.parse("6 (12 inch) flour tortillas")
+        XCTAssertEqual(tortillas.quantity, 6)
+        XCTAssertEqual(tortillas.unit, "item")
+        XCTAssertEqual(tortillas.name, "flour tortillas")
+        XCTAssertEqual(tortillas.note, "12 inch")
+
+        let trailing = IngredientLineParser.parse("6 flour tortillas (12 inches)")
+        XCTAssertEqual(trailing.name, "flour tortillas")
+
+        let hyphenated = IngredientLineParser.parse("2 (14.5-ounce) cans diced tomatoes")
+        XCTAssertEqual(hyphenated.quantity, 29)
+        XCTAssertEqual(hyphenated.unit, "oz")
+        XCTAssertEqual(hyphenated.name, "diced tomatoes")
+
+        let seasoning = IngredientLineParser.parse("1 (1 ounce) envelope taco seasoning")
+        XCTAssertEqual(seasoning.quantity, 1)
+        XCTAssertEqual(seasoning.unit, "oz")
+        XCTAssertEqual(seasoning.name, "taco seasoning")
+    }
+
+    func testCleansModelGeneratedNames() {
+        XCTAssertEqual(IngredientLineParser.cleanName("flour tortillas (12 inches").name, "flour tortillas")
+        XCTAssertEqual(IngredientLineParser.cleanName("16 ounces) refried beans").name, "refried beans")
+        XCTAssertEqual(IngredientLineParser.cleanName("16 ounces) refried beans").note, "16 ounces")
+        XCTAssertEqual(IngredientLineParser.cleanName("envelope taco seasoning").name, "taco seasoning")
+        XCTAssertEqual(IngredientLineParser.cleanName("Sour cream and salsa").name, "Sour cream and salsa")
+    }
+
     func testParsesRangesContainersAndToTaste() {
         let garlic = IngredientLineParser.parse("2-3 cloves garlic, minced")
         XCTAssertEqual(garlic.quantity, 2)

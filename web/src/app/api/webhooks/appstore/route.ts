@@ -24,7 +24,10 @@ export async function POST(request: NextRequest) {
   if (!notification.data?.signedTransactionInfo) return NextResponse.json({ ok: true });
   const transaction = await verifyAppleJWS<DecodedTransaction>(notification.data.signedTransactionInfo, { allowUnverified });
   const renewal = notification.data.signedRenewalInfo ? await verifyAppleJWS<DecodedRenewalInfo>(notification.data.signedRenewalInfo, { allowUnverified }) : undefined;
-  const user = transaction.appAccountToken ? await prisma.user.findUnique({ where: { appleAppAccountToken: transaction.appAccountToken } }) : null;
+  const existing = await prisma.subscription.findUnique({ where: { providerSubscriptionId: transaction.originalTransactionId }, select: { userId: true } });
+  const user = existing
+    ? { id: existing.userId }
+    : transaction.appAccountToken ? await prisma.user.findUnique({ where: { appleAppAccountToken: transaction.appAccountToken } }) : null;
   if (!user) return NextResponse.json({ ok: true, unmatched: true });
 
   const state = subscriptionStateFrom(transaction, renewal, notification.notificationType);

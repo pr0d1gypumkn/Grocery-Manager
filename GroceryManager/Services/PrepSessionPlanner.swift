@@ -53,6 +53,10 @@ struct PrepStep: Codable, Identifiable, Equatable, Hashable {
     var recipeNames: [String]
     /// Steps sharing a group index are done at the same time.
     var group: Int = 0
+    /// Lemmatised operations ("dice", "simmer") and ingredient keys of a recipe step.
+    /// Optional so plans stored before these existed still decode.
+    var operations: [String]? = nil
+    var ingredients: [String]? = nil
 }
 
 struct PrepRecipeSummary: Codable, Equatable, Hashable {
@@ -81,6 +85,17 @@ struct PrepRecipeInput {
     var instructions: String
     var ingredientNames: [String]
     var servings: Int
+    /// Stored lemmatised steps and ingredient keys; computed from the text when nil.
+    var steps: [RecipeStep]? = nil
+    var ingredientKeys: [String]? = nil
+
+    var resolvedKeys: [String] {
+        ingredientKeys ?? ingredientNames.map(IngredientNameMatcher.key).filter { !$0.isEmpty }
+    }
+
+    var resolvedSteps: [RecipeStep] {
+        steps ?? StepLemmatizer.steps(from: instructions, ingredientKeys: resolvedKeys)
+    }
 }
 
 // MARK: - Planner
@@ -96,7 +111,7 @@ struct PrepSessionPlanner {
         guard !recipes.isEmpty else { return PrepPlan(steps: [], recipes: [], estimatedMinutes: 0) }
 
         let shared = sharedSteps(for: recipes)
-        let coveredAnchors = Set(shared.flatMap(\.anchors))
+        let covered = Set(shared.flatMap(\.covers))
         var allSteps: [PrepStep] = []
         var nextGroup = 0
 
@@ -105,7 +120,7 @@ struct PrepSessionPlanner {
         (allSteps, nextGroup) = schedule(tracks: [shared.map(\.step)], startingAt: 0)
 
         let tracks = recipes.map { recipe in
-            recipeSteps(for: recipe, coveredAnchors: coveredAnchors)
+            recipeSteps(for: recipe, covered: covered)
         }
         let (recipeScheduled, _) = schedule(tracks: tracks, startingAt: nextGroup)
         allSteps += recipeScheduled
@@ -127,8 +142,9 @@ struct PrepSessionPlanner {
 
     private struct SharedStep {
         var step: PrepStep
-        /// Ingredient anchor tokens this step covers, so per-recipe steps about them can be skipped.
-        var anchors: [String]
+        /// The (operation family, ingredient) work this step does for every recipe, so
+        /// per-recipe steps doing only that work can be skipped.
+        var covers: [StepAction]
     }
 
     private func sharedSteps(for recipes: [PrepRecipeInput]) -> [SharedStep] {
@@ -161,10 +177,10 @@ struct PrepSessionPlanner {
                         timerMinutes: 15,
                         recipeNames: entry.recipes
                     ),
-                    anchors: []
+                    covers: [StepAction(family: "boil", ingredient: key)]
                 ))
             case .vegetables:
-                let verb = knifeVerb(for: key, in: recipes.filter { entry.recipes.contains($0.name) }.map(\.instructions))
+                let verb = knifeVerb(for: key, in: recipes.filter { entry.recipes.contains($0.name) }.flatMap(\.resolvedSteps))
                 knifeWork[verb, default: []].append((key, entry.display, entry.recipes))
             default:
                 continue
@@ -183,7 +199,9 @@ struct PrepSessionPlanner {
                     minutes: 3 * items.count,
                     recipeNames: recipeNames
                 ),
-                anchors: items.map { $0.key.split(separator: " ").last.map(String.init) ?? $0.key }
+                covers: items.flatMap { item in
+                    Self.knifeFamilies(for: verb).map { StepAction(family: $0, ingredient: item.key) }
+                }
             ), at: 0)
         }
 
@@ -202,7 +220,7 @@ struct PrepSessionPlanner {
                     timerMinutes: 10,
                     recipeNames: ovenRecipes.map(\.name)
                 ),
-                anchors: []
+                covers: []
             ), at: 0)
         }
         return result
@@ -210,14 +228,15 @@ struct PrepSessionPlanner {
 
     // MARK: Per-recipe steps
 
-    private func recipeSteps(for recipe: PrepRecipeInput, coveredAnchors: Set<String>) -> [PrepStep] {
-        let sentences = InstructionSteps.split(recipe.instructions)
+    private func recipeSteps(for recipe: PrepRecipeInput, covered: Set<StepAction>) -> [PrepStep] {
         var steps: [PrepStep] = []
-        for (index, sentence) in sentences.enumerated() {
+        for (index, recipeStep) in recipe.resolvedSteps.enumerated() {
+            let sentence = recipeStep.text
             let lane = Self.lane(for: sentence)
-            let lower = sentence.lowercased()
-            if lane == .passive, lower.contains("preheat") { continue } // handled once for the session
-            if lane == .prep, coveredAnchors.contains(where: { lower.contains($0) }) { continue } // done in shared knife work
+            if lane == .passive, recipeStep.operations.contains("preheat") || sentence.lowercased().contains("preheat") { continue } // handled once for the session
+            // Everything this step does already happens in a shared step.
+            let actions = recipeStep.actions
+            if !actions.isEmpty, actions.isSubset(of: covered) { continue }
             let parsed = Self.minutes(in: sentence)
             let minutes = parsed ?? lane.defaultMinutes
             steps.append(PrepStep(
@@ -226,7 +245,9 @@ struct PrepSessionPlanner {
                 lane: lane,
                 minutes: minutes,
                 timerMinutes: (parsed != nil && lane != .prep && lane != .assemble && minutes >= 2) ? minutes : nil,
-                recipeNames: [recipe.name]
+                recipeNames: [recipe.name],
+                operations: recipeStep.operations,
+                ingredients: recipeStep.ingredients
             ))
         }
         if steps.isEmpty {
@@ -321,13 +342,23 @@ struct PrepSessionPlanner {
         return longest
     }
 
-    private func knifeVerb(for key: String, in instructions: [String]) -> String {
-        let anchor = key.split(separator: " ").last.map(String.init) ?? key
-        let sentences = instructions.flatMap { InstructionSteps.split($0) }.map { $0.lowercased() }.filter { $0.contains(anchor) }
-        for (word, verb) in [("dice", "Dice"), ("mince", "Mince"), ("chop", "Chop"), ("slice", "Slice"), ("grate", "Grate"), ("shred", "Shred"), ("julienne", "Julienne"), ("peel", "Peel")] {
-            if sentences.contains(where: { $0.contains(word) }) { return verb }
+    private static let knifeVerbs = ["dice", "mince", "chop", "slice", "cube", "grate", "shred", "julienne", "zest", "peel"]
+
+    /// The knife operation the recipes apply to this ingredient most often.
+    private func knifeVerb(for key: String, in steps: [RecipeStep]) -> String {
+        var counts: [String: Int] = [:]
+        for step in steps where step.ingredients.contains(key) {
+            for op in step.operations where Self.knifeVerbs.contains(op) { counts[op, default: 0] += 1 }
         }
-        return "Wash & chop"
+        let best = Self.knifeVerbs.filter { counts[$0] != nil }.max { counts[$0]! < counts[$1]! || (counts[$0]! == counts[$1]! && Self.knifeVerbs.firstIndex(of: $0)! > Self.knifeVerbs.firstIndex(of: $1)!) }
+        return best?.capitalized ?? "Wash & chop"
+    }
+
+    /// The operation families a shared knife step takes care of.
+    private static func knifeFamilies(for verb: String) -> [String] {
+        let op = verb.lowercased()
+        guard knifeVerbs.contains(op) else { return ["cut", "clean"] }
+        return Array(Set([CookingOperation.family(of: op), "clean"]))
     }
 
     private static func list(_ names: [String]) -> String {
@@ -380,7 +411,9 @@ extension PrepSessionPlanner {
                     name: recipe.name,
                     instructions: recipe.instructions,
                     ingredientNames: recipe.ingredients.map(\.name),
-                    servings: entry.servings
+                    servings: entry.servings,
+                    steps: recipe.lemmatizedSteps,
+                    ingredientKeys: recipe.ingredientKeys
                 )
             }
         }

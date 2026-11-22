@@ -13,7 +13,11 @@ datasource db {
 
 model User {
   id          String   @id @default(cuid())
-  email       String   @unique
+  email       String?  @unique
+  /// Sign in with Apple subject (stable per app); null for email-only web users.
+  appleUserId String?  @unique
+  /// Kept only to revoke the Sign in with Apple grant when the account is deleted.
+  appleRefreshToken String?
   createdAt   DateTime @default(now())
   region      String   @default("US") // US | CA
   currency    String   @default("USD")

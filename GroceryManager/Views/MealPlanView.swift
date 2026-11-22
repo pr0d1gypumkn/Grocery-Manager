@@ -299,7 +299,7 @@ struct MealPlanView: View {
                         Text("Plan this week for me")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.primary)
-                        Text("From your recipes, pantry, household and budget. Swap any meal.")
+                        Text("From your recipes, pantry and household. Swap any meal.")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }

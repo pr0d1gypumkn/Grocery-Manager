@@ -15,7 +15,7 @@ export const POST = withUser(async (request, user) => {
   const profile = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
   let customerId = profile.stripeCustomerId;
   if (!customerId) {
-    const customer = await stripe.customers.create({ email: profile.email, metadata: { userId: user.id } });
+    const customer = await stripe.customers.create({ email: profile.email ?? undefined, metadata: { userId: user.id } });
     customerId = customer.id;
     await prisma.user.update({ where: { id: user.id }, data: { stripeCustomerId: customerId } });
   }

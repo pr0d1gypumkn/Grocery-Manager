@@ -7,13 +7,24 @@ import { prisma } from "./db";
 // Passwordless email codes. The same token works for the web (cookie) and the iOS app
 // (Bearer header). No account is ever required for the free tier; this exists for Plus.
 
-const SECRET = new TextEncoder().encode(process.env.AUTH_SECRET ?? "dev-secret-change-me");
+/** The token signing key. Checked at first use, not import, so `next build` works without it. */
+function secret(): Uint8Array {
+  const value = process.env.AUTH_SECRET;
+  if (!value && process.env.NODE_ENV === "production") throw new Error("AUTH_SECRET must be set in production");
+  return new TextEncoder().encode(value ?? "dev-secret-change-me");
+}
 const COOKIE = "mealy_session";
 const TOKEN_DAYS = 90;
 
 export interface SessionUser {
   id: string;
-  email: string;
+  /** Null for iOS users who signed in with their Apple ID and shared no email. */
+  email: string | null;
+}
+
+/** A friendly default member name: the email's local part, or a generic one. */
+export function displayName(user: { email: string | null }): string {
+  return user.email?.split("@")[0] ?? "Member";
 }
 
 function hashCode(email: string, code: string): string {
@@ -50,14 +61,14 @@ export async function signToken(user: SessionUser): Promise<string> {
     .setSubject(user.id)
     .setIssuedAt()
     .setExpirationTime(`${TOKEN_DAYS}d`)
-    .sign(SECRET);
+    .sign(secret());
 }
 
 export async function verifyToken(token: string): Promise<SessionUser | null> {
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, secret());
     if (!payload.sub) return null;
-    return { id: payload.sub, email: String(payload.email ?? "") };
+    return { id: payload.sub, email: typeof payload.email === "string" && payload.email ? payload.email : null };
   } catch {
     return null;
   }
@@ -96,7 +107,7 @@ export async function householdFor(userId: string) {
     data: {
       name: "My household",
       ownerId: userId,
-      members: { create: { userId, name: user.email.split("@")[0], role: "owner" } },
+      members: { create: { userId, name: displayName(user), role: "owner" } },
     },
   });
 }

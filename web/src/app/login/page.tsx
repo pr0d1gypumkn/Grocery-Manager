@@ -12,6 +12,10 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     if (!email.includes("@")) redirect("/login?error=Enter+a+valid+email");
     const { code } = await requestCode(email);
     const delivered = await sendCodeEmail(email, code);
+    if (!delivered && process.env.NODE_ENV === "production") {
+      // Never reveal the code in production: anyone could then sign in as any email.
+      redirect("/login?error=We+couldn%27t+send+the+code.+Please+try+again+later.");
+    }
     redirect(`/login?sent=1&email=${encodeURIComponent(email)}${delivered ? "" : `&devCode=${code}`}`);
   }
 
