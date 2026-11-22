@@ -122,8 +122,8 @@
           "billingPlans" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "commitmentDisplayPrice" : "4.99",
-              "displayPrice" : "4.99",
+              "commitmentDisplayPrice" : "2.99",
+              "displayPrice" : "2.99",
               "internalID" : "979C94F5",
               "isEnabled" : true
             }
@@ -131,7 +131,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "4.99",
+          "displayPrice" : "2.99",
           "familyShareable" : true,
           "groupNumber" : 1,
           "internalID" : "6740000001",
@@ -161,8 +161,8 @@
           "billingPlans" : [
             {
               "billingPlanType" : "BILLED_UPFRONT",
-              "commitmentDisplayPrice" : "39.99",
-              "displayPrice" : "39.99",
+              "commitmentDisplayPrice" : "24.99",
+              "displayPrice" : "24.99",
               "internalID" : "A7A9A535",
               "isEnabled" : true
             }
@@ -170,7 +170,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "39.99",
+          "displayPrice" : "24.99",
           "familyShareable" : true,
           "groupNumber" : 1,
           "internalID" : "6740000002",
@@ -179,7 +179,7 @@
           ],
           "localizations" : [
             {
-              "description" : "All Plus features, billed yearly (2 months free)",
+              "description" : "All Plus features, billed yearly",
               "displayName" : "Plus Yearly",
               "locale" : "en_US"
             }

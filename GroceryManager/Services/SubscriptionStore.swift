@@ -65,8 +65,11 @@ final class SubscriptionStore {
         guard let monthly, let yearly else { return nil }
         let monthlyPerYear = monthly.price * 12
         guard monthlyPerYear > 0 else { return nil }
-        let saving = (monthlyPerYear - yearly.price) / monthlyPerYear * 100
-        let percent = NSDecimalNumber(decimal: saving).intValue
+        var saving = (monthlyPerYear - yearly.price) / monthlyPerYear * 100
+        // Round before converting: NSDecimalNumber.intValue garbles long decimals (19.9 / 59.88).
+        var whole = Decimal()
+        NSDecimalRound(&whole, &saving, 0, .down)
+        let percent = NSDecimalNumber(decimal: whole).intValue
         return percent > 0 ? percent : nil
     }
 

@@ -6,6 +6,9 @@ import { display, formatQuantity } from "@/lib/units";
 import { checkoutProvidersFor, priceList } from "@/lib/prices/registry";
 import { Locked } from "@/components/Locked";
 
+// Grocery checkout only opens retailer search pages for now; hidden until real cart hand-off exists.
+const CHECKOUT_ENABLED = false;
+
 export default async function GroceriesPage() {
   const { household, profile, has } = await pageContext();
   const items = await prisma.groceryItem.findMany({ where: { householdId: household.id, deletedAt: null } });
@@ -98,6 +101,7 @@ export default async function GroceriesPage() {
         <button className="primary" type="submit">Add</button>
       </form>
 
+      {CHECKOUT_ENABLED ? <>
       <h2>Checkout</h2>
       {has("checkout_links") ? (
         <div className="card inline" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -105,6 +109,7 @@ export default async function GroceriesPage() {
           <span className="muted">Opens the retailer with your unchecked items. Full cart hand-off needs each retailer's API key.</span>
         </div>
       ) : <Locked feature="checkout_links" />}
+      </> : null}
     </>
   );
 }

@@ -82,7 +82,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         {entitlement.tier !== "plus" ? (
           <div className="inline" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <form action={startCheckout}><input type="hidden" name="period" value="monthly" /><button type="submit" disabled={!stripeReady}>Plus monthly</button></form>
-            <form action={startCheckout}><input type="hidden" name="period" value="yearly" /><button className="primary" type="submit" disabled={!stripeReady}>Plus yearly · 2 months free</button></form>
+            <form action={startCheckout}><input type="hidden" name="period" value="yearly" /><button className="primary" type="submit" disabled={!stripeReady}>Plus yearly</button></form>
             {!stripeReady ? <span className="muted">Stripe keys are not configured; on iOS use the App Store.</span> : null}
           </div>
         ) : entitlement.source === "stripe" && profile.stripeCustomerId ? <a className="btn" href="/api/billing/portal">Manage subscription</a> : null}

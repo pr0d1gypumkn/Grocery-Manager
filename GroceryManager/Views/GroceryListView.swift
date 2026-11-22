@@ -151,19 +151,21 @@ struct GroceryListView: View {
                         viewModel.addLowStockIngredients(inventory)
                         withAnimation { toast = "Low stock items added" }
                     }
-                    Divider()
-                    if entitlements.hasFeature(.checkoutLinks) {
-                        Menu {
-                            ForEach(CheckoutProvider.available(in: settings.region)) { provider in
-                                Button(provider.name, systemImage: provider.symbol) { sendToCheckout(provider) }
+                    if Feature.checkoutLinks.isAvailable {
+                        Divider()
+                        if entitlements.hasFeature(.checkoutLinks) {
+                            Menu {
+                                ForEach(CheckoutProvider.available(in: settings.region)) { provider in
+                                    Button(provider.name, systemImage: provider.symbol) { sendToCheckout(provider) }
+                                }
+                            } label: {
+                                Label("Send list to…", systemImage: "shippingbox")
                             }
-                        } label: {
-                            Label("Send list to…", systemImage: "shippingbox")
-                        }
-                        .disabled(pending.isEmpty)
-                    } else {
-                        PlusGate(feature: .checkoutLinks, action: {}) {
-                            Label("Send list to a delivery service", systemImage: "shippingbox")
+                            .disabled(pending.isEmpty)
+                        } else {
+                            PlusGate(feature: .checkoutLinks, action: {}) {
+                                Label("Send list to a delivery service", systemImage: "shippingbox")
+                            }
                         }
                     }
                 } label: {

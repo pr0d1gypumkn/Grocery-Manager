@@ -106,10 +106,11 @@ struct PaywallView: View {
                 isPurchasing = false
             }
         } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
+            HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 3) {
                     Text(product.displayName.isEmpty ? (product.id.hasSuffix("yearly") ? "Yearly" : "Monthly") : product.displayName)
                         .font(.headline)
+                        .foregroundStyle(prominent ? .white : .primary)
                     Text(product.description)
                         .font(.caption)
                         .foregroundStyle(prominent ? .white.opacity(0.85) : .secondary)
@@ -119,19 +120,24 @@ struct PaywallView: View {
                             .foregroundStyle(prominent ? .white : .purple)
                     }
                 }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
+                Spacer(minLength: 8)
+                VStack(alignment: .trailing, spacing: 4) {
                     Text("\(product.displayPrice)\(Self.periodSuffix(product))")
                         .font(.headline.monospacedDigit())
+                        .foregroundStyle(prominent ? .white : .primary)
                     if let badge {
                         StatusBadge(text: badge, tint: prominent ? .white : .green)
                     }
                 }
             }
+            .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
         }
         .buttonStyle(.glass(prominent ? .regular.tint(.purple).interactive() : .regular.interactive()))
+        // Rounded corners like the cards above; a capsule pinches two-line text at the ends.
+        .buttonBorderShape(.roundedRectangle(radius: 22))
         .disabled(isPurchasing)
     }
 
@@ -202,7 +208,7 @@ struct PrivacyPolicyView: View {
                     section("Photos", "When you import a recipe from a photo, the text is read on your device. The photo isn't uploaded or kept.")
                     section("Recipe links", "When you import a recipe from a web, TikTok, Instagram or YouTube link, the app downloads that page to read the recipe from it.")
                     section("Your Apple ID and household sharing", "Some Plus features, such as household sharing, use our server. There's no separate Mealy account: if you subscribe, your App Store purchase identifies you, and if you join someone's household you use Sign in with Apple. We store an anonymous Apple user ID, your subscription status, your email only if you choose to share it with Sign in with Apple, and the household data you share, only to provide those features. You can delete this at any time in Settings ▸ Account.")
-                    section("Requests to our server", "While you're signed in, a few Plus features ask our server for help: recipe ideas send the names of your saved recipes, pantry items and diet preferences; social import sends the post's link; grocery checkout sends the names and amounts on your list. These are used only to answer that request and aren't stored.")
+                    section("Requests to our server", "While you're signed in, a few Plus features ask our server for help: recipe ideas send the names of your saved recipes, pantry items and diet preferences, and social import sends the post's link. These are used only to answer that request and aren't stored.")
                     section("Purchases", "Subscriptions are handled by Apple. We receive a signed confirmation of your subscription from Apple, never your payment details.")
                     section("Notifications", "Expiry reminders are scheduled on your device. Nothing about them is sent to us.")
                     section("Children", "Mealy isn't directed at children under 13, and we don't knowingly collect their personal information.")

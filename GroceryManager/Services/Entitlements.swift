@@ -26,10 +26,12 @@ enum Feature: String, CaseIterable, Codable, Identifiable {
         // The server has no price partner configured yet (FLIPP/INSTACART/... keys), so it would
         // only return mock prices. Turn on once a real source is live; App Review rejects demo data.
         case .priceAwareShopping: false
+        // Only opens retailer search pages for now; no real cart hand-off yet. Don't sell it until there is.
+        case .checkoutLinks: false
         // Needs the Mealy server for accounts and sync.
         case .householdSharing: APIClient.isConfigured
         // Work on-device; the server only improves them when present.
-        case .automaticPlanning, .recipeSuggestions, .socialImport, .checkoutLinks: true
+        case .automaticPlanning, .recipeSuggestions, .socialImport: true
         }
     }
 
