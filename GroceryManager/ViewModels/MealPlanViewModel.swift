@@ -40,8 +40,41 @@ final class MealPlanViewModel: ObservableObject {
         saveChanges()
     }
 
+    /// Removes a meal. Its planned leftovers go with it; removing a leftovers meal takes its
+    /// servings back off the meal it came from, so the shopping list stops buying for it.
     func delete(_ entry: MealPlanEntry) {
+        if let source = entry.leftoverOf, !source.isCooked {
+            source.servings = max(source.servings - entry.servings, 1)
+        }
         modelContext.delete(entry)
+        saveChanges()
+    }
+
+    /// Cooks `extraServings` more of `entry` and plans them as leftovers for `mealType` the
+    /// next day. The extra servings are added to the source meal, so stock is used once.
+    @discardableResult
+    func planLeftovers(of entry: MealPlanEntry, extraServings: Int, mealType: MealType = .lunch) -> MealPlanEntry? {
+        guard let recipe = entry.recipe, entry.leftoverOf == nil, entry.batch == nil, extraServings > 0,
+              let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: entry.date) else { return nil }
+        let leftovers = MealPlanEntry(
+            date: nextDay,
+            mealType: mealType,
+            recipe: recipe,
+            servings: extraServings,
+            note: "Leftovers from \(entry.date.formatted(.dateTime.weekday(.wide))) \(entry.mealType.rawValue.lowercased())"
+        )
+        leftovers.leftoverOf = entry
+        modelContext.insert(leftovers)
+        if !entry.isCooked { entry.servings += extraServings }
+        saveChanges()
+        return leftovers
+    }
+
+    /// Puts a different recipe in a planned slot. Planned leftovers follow the new recipe.
+    func swapRecipe(of entry: MealPlanEntry, to recipe: Recipe) {
+        entry.recipe = recipe
+        entry.isCooked = false
+        for leftover in entry.plannedLeftovers { leftover.recipe = recipe }
         saveChanges()
     }
 
@@ -95,10 +128,11 @@ final class MealPlanViewModel: ObservableObject {
 
     // MARK: - Stock
 
-    /// The scaled ingredient amounts a set of planned meals will use.
+    /// The scaled ingredient amounts a set of planned meals will use. Planned leftovers use
+    /// none: their servings are cooked as part of the meal they come from.
     nonisolated static func requirements(for entries: [MealPlanEntry]) -> [IngredientRequirement] {
         entries.flatMap { entry -> [IngredientRequirement] in
-            guard let recipe = entry.recipe else { return [] }
+            guard let recipe = entry.recipe, entry.leftoverOf == nil else { return [] }
             return recipe.ingredients.map {
                 IngredientRequirement(name: $0.name, quantity: $0.requiredQuantity * entry.scale, unit: $0.unit)
             }
@@ -114,6 +148,8 @@ final class MealPlanViewModel: ObservableObject {
         var shortfalls: [String] = []
         if let batch = entry.batch {
             eat(portions: entry.servings, from: batch)
+        } else if entry.leftoverOf != nil {
+            // Eating planned leftovers: the ingredients came out when the source meal was cooked.
         } else {
             shortfalls = InventoryViewModel(modelContext: modelContext)
                 .consume(Self.requirements(for: [entry]), from: inventory)
@@ -188,7 +224,7 @@ final class MealPlanViewModel: ObservableObject {
         locations: [StorageLocation]
     ) -> [String] {
         let covered = entries.filter { entry in
-            !entry.isCooked && entry.batch == nil && specs.contains { $0.recipe === entry.recipe }
+            !entry.isCooked && entry.batch == nil && entry.leftoverOf == nil && specs.contains { $0.recipe === entry.recipe }
         }
         let shortfalls = InventoryViewModel(modelContext: modelContext)
             .consume(Self.requirements(for: covered), from: inventory)

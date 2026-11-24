@@ -199,7 +199,15 @@ final class MealPlanEntry {
     var recipe: Recipe?
     /// Set when this meal is a portion of a batch cooked in a prep session.
     var batch: PrepBatch?
-    var isLeftover: Bool { batch != nil }
+    /// Set on a planned leftovers meal: the meal whose extra servings it eats. The source
+    /// meal's servings already include these, so a leftovers meal needs no ingredients.
+    var leftoverOf: MealPlanEntry?
+    /// Leftovers meals planned from this meal's extra servings. Removed with it.
+    @Relationship(deleteRule: .cascade, inverse: \MealPlanEntry.leftoverOf)
+    var storedLeftovers: [MealPlanEntry]? = []
+
+    var plannedLeftovers: [MealPlanEntry] { storedLeftovers ?? [] }
+    var isLeftover: Bool { batch != nil || leftoverOf != nil }
 
     var mealType: MealType {
         get { MealType(rawValue: mealTypeRaw) ?? .dinner }

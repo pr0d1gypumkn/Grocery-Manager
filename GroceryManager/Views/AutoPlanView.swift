@@ -122,11 +122,14 @@ struct AutoPlanView: View {
         let slots = includeLunches ? AutoPlanner.defaultSlots : AutoPlanner.defaultSlots.filter { $0.mealType == .dinner }
         var results: [AutoPlanner.Proposal] = []
         let base = baseOptions()
-        // Slot by slot, so a swap only changes that one slot.
-        for slot in slots {
+        // Slot by slot, so a swap only changes that one slot. Each call is told what the
+        // earlier slots spent and how many slots follow, so the weekly budget is shared.
+        for (index, slot) in slots.enumerated() {
             var options = base
             options.excludeRecipeNames = excluded["\(slot.dayOffset)-\(slot.mealType.rawValue)"] ?? []
             options.locked = base.locked + results.map { ($0.dayOffset, $0.mealType, $0.recipe) }
+            options.spentCents = results.reduce(0) { $0 + $1.estimatedCents }
+            options.slotsAfter = slots.count - index - 1
             if let proposal = AutoPlanner().plan(recipes: recipes, slots: [slot], options: options).first {
                 results.append(proposal)
             }
@@ -136,6 +139,10 @@ struct AutoPlanView: View {
 
     private func swap(_ proposal: AutoPlanner.Proposal) {
         excluded[proposal.id, default: []].insert(proposal.recipe.name)
+        // Swapped past every recipe: start the cycle again rather than leave the slot empty.
+        if excluded[proposal.id, default: []].count >= recipes.count {
+            excluded[proposal.id] = [proposal.recipe.name]
+        }
         withAnimation(.snappy) { rebuild() }
     }
 

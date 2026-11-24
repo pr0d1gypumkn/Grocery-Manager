@@ -16,6 +16,9 @@ struct MealPlanView: View {
     @State private var showingSettings = false
     @State private var showingAutoPlan = false
     @State private var relocation: Relocation?
+    @State private var swapping: MealPlanEntry?
+    @AppStorage("mealPlanLayout") private var layout: PlanLayout = .day
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var settings = AppSettings.shared
     @State private var entitlements = EntitlementService.shared
     @Namespace private var dayNamespace
@@ -48,20 +51,33 @@ struct MealPlanView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                weekStrip
+                Picker("Layout", selection: $layout.animation(.smooth)) {
+                    ForEach(PlanLayout.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.segmented)
+
+                if layout == .day { weekStrip }
                 weekSummary
                 if weekEntries.count < 3 && recipes.count >= 3 {
                     autoPlanCard
+                } else {
+                    gapsCard
                 }
-                if weekEntries.contains(where: { !$0.isCooked && $0.batch == nil }) {
+                if weekEntries.contains(where: { !$0.isCooked && !$0.isLeftover }) {
                     prepSessionCard
                 } else if recipes.count >= 2 && weekEntries.count < 3 {
                     prepPrompt
                 }
-                ForEach(MealType.allCases) { mealType in
-                    mealSection(mealType)
+                switch layout {
+                case .day:
+                    ForEach(MealType.allCases) { mealType in
+                        mealSection(mealType)
+                    }
+                    dayNutrition
+                case .week:
+                    weekGrid
+                    weekNutrition
                 }
-                dayNutrition
             }
             .padding(.horizontal)
             .padding(.bottom, 24)
@@ -120,6 +136,12 @@ struct MealPlanView: View {
         }
         .sheet(isPresented: $showingAutoPlan) {
             AutoPlanView(weekStart: week.first ?? selectedDate, existing: weekEntries)
+        }
+        .sheet(item: $swapping) { entry in
+            SwapMealView(entry: entry, weekStart: week.first ?? selectedDate, weekEntries: weekEntries) { recipe in
+                viewModel.swapRecipe(of: entry, to: recipe)
+                withAnimation { toast = "Swapped for \(recipe.name)" }
+            }
         }
         .sheet(item: $relocation) { relocation in
             RelocateMealView(relocation: relocation) { date, mealType in
@@ -318,7 +340,7 @@ struct MealPlanView: View {
     }
 
     private var prepSessionCard: some View {
-        let pending = weekEntries.filter { !$0.isCooked && $0.batch == nil }
+        let pending = weekEntries.filter { !$0.isCooked && !$0.isLeftover }
         let recipeCount = Set(pending.compactMap { $0.recipe?.name }).count
         return Button {
             showingPrepSession = true
@@ -360,20 +382,10 @@ struct MealPlanView: View {
                     entry: entry,
                     inventory: inventory,
                     onCook: { cook(entry) },
-                    onUndoCook: { viewModel.markNotCooked(entry) },
-                    onMoveToTomorrow: {
-                        if let next = calendar.date(byAdding: .day, value: 1, to: entry.date) {
-                            viewModel.move(entry, to: next)
-                        }
-                    },
-                    onMove: { relocation = Relocation(entry: entry, kind: .move) },
-                    onCopy: { relocation = Relocation(entry: entry, kind: .copy) },
-                    onRepeat: {
-                        viewModel.repeatWeekly(entry, weeks: 4)
-                        withAnimation { toast = "Repeats for the next 4 weeks" }
-                    },
-                    onDelete: { viewModel.delete(entry) }
-                )
+                    onUndoCook: { viewModel.markNotCooked(entry) }
+                ) {
+                    mealMenu(entry)
+                }
                 .draggable("\(entry.persistentModelID.hashValue)")
             }
 
@@ -412,10 +424,153 @@ struct MealPlanView: View {
         }
     }
 
+    // MARK: - Meal actions
+
+    /// The actions offered on a planned meal, in the day list and the week grid alike.
+    @ViewBuilder
+    private func mealMenu(_ entry: MealPlanEntry) -> some View {
+        if entry.isCooked {
+            Button("Mark as not cooked", systemImage: "arrow.uturn.backward") { viewModel.markNotCooked(entry) }
+        } else {
+            Button(entry.isLeftover ? "Eat leftovers" : "Cook & use stock", systemImage: "frying.pan") { cook(entry) }
+        }
+        Divider()
+        if !entry.isLeftover && !entry.isCooked {
+            Button("Swap for another recipe", systemImage: "arrow.triangle.2.circlepath") { swapping = entry }
+        }
+        if canPlanLeftovers(entry) {
+            Button("Cook extra for tomorrow's lunch", systemImage: "takeoutbag.and.cup.and.straw") { planLeftovers(entry) }
+        }
+        Button("Move to tomorrow", systemImage: "calendar.badge.plus") {
+            if let next = calendar.date(byAdding: .day, value: 1, to: entry.date) {
+                viewModel.move(entry, to: next)
+            }
+        }
+        Button("Move to…", systemImage: "arrow.right.circle") { relocation = Relocation(entry: entry, kind: .move) }
+        if !entry.isLeftover {
+            Button("Copy to…", systemImage: "doc.on.doc") { relocation = Relocation(entry: entry, kind: .copy) }
+            Button("Repeat weekly (4 weeks)", systemImage: "repeat") {
+                viewModel.repeatWeekly(entry, weeks: 4)
+                withAnimation { toast = "Repeats for the next 4 weeks" }
+            }
+        }
+        Divider()
+        Button("Remove from plan", systemImage: "trash", role: .destructive) { viewModel.delete(entry) }
+    }
+
+    private func canPlanLeftovers(_ entry: MealPlanEntry) -> Bool {
+        !entry.isLeftover && entry.recipe != nil && entry.plannedLeftovers.isEmpty
+            && (entry.mealType == .dinner || entry.mealType == .lunch)
+    }
+
+    private func planLeftovers(_ entry: MealPlanEntry) {
+        let extra = Self.householdServings(households)
+        guard let leftovers = viewModel.planLeftovers(of: entry, extraServings: extra) else { return }
+        withAnimation { toast = "Leftovers planned for \(leftovers.date.formatted(.dateTime.weekday(.wide))) lunch" }
+    }
+
+    static func householdServings(_ households: [Household]) -> Int {
+        guard let household = households.first, !household.members.isEmpty else { return 2 }
+        return max(Int(household.servingsPerMeal.rounded(.up)), 1)
+    }
+
+    // MARK: - Gaps
+
+    /// Days this week with no dinner yet, earliest first (today onwards for the current week).
+    private var daysWithoutDinner: [Date] {
+        let today = calendar.startOfDay(for: .now)
+        return week.filter { day in
+            day >= today && !weekEntries.contains { calendar.isDate($0.date, inSameDayAs: day) && $0.mealType == .dinner }
+        }
+    }
+
+    @ViewBuilder
+    private var gapsCard: some View {
+        let open = daysWithoutDinner
+        if !weekEntries.isEmpty, let first = open.first {
+            Button {
+                withAnimation(.smooth) { selectedDate = first }
+                addMealContext = AddMealContext(date: first, mealType: .dinner)
+            } label: {
+                HStack(spacing: 12) {
+                    IconTile(symbol: "calendar.badge.exclamationmark", tint: .indigo, size: 38)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(open.count == 1 ? "1 dinner left to plan" : "\(open.count) dinners left to plan")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                        Text(open.map { $0.formatted(.dateTime.weekday(.abbreviated)) }.joined(separator: ", ")
+                             + " · tap to plan \(first.formatted(.dateTime.weekday(.wide)))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.indigo)
+                }
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .glassCard(cornerRadius: 22, tint: .indigo)
+        }
+    }
+
+    // MARK: - Week grid
+
+    private var weekGrid: some View {
+        let columns = horizontalSizeClass == .regular
+            ? [GridItem(.adaptive(minimum: 220), spacing: 12, alignment: .top)]
+            : [GridItem(.flexible(), alignment: .top)]
+        return LazyVGrid(columns: columns, alignment: .leading, spacing: 12) {
+            ForEach(week, id: \.self) { day in
+                WeekDayCard(
+                    day: day,
+                    entries: weekEntries.filter { calendar.isDate($0.date, inSameDayAs: day) },
+                    inventory: inventory,
+                    onAdd: { mealType in addMealContext = AddMealContext(date: day, mealType: mealType) },
+                    onSelectDay: {
+                        withAnimation(.smooth) {
+                            selectedDate = day
+                            layout = .day
+                        }
+                    },
+                    onDrop: { id, mealType in
+                        guard let entry = allEntries.first(where: { "\($0.persistentModelID.hashValue)" == id }) else { return false }
+                        viewModel.move(entry, to: day, mealType: mealType)
+                        withAnimation { toast = "Moved to \(day.formatted(.dateTime.weekday(.wide))) \(mealType.rawValue.lowercased())" }
+                        return true
+                    }
+                ) { entry in
+                    mealMenu(entry)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var weekNutrition: some View {
+        let eaten = weekEntries.filter { $0.nutrition != nil }
+        let days = Set(eaten.map { calendar.startOfDay(for: $0.date) }).count
+        if days > 0 {
+            let total = eaten.compactMap(\.nutrition).reduce(NutritionFacts.zero, +)
+            let perPersonPerDay = total / (Double(max(Self.householdServings(households), 1)) * Double(days))
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Daily average this week", systemImage: "chart.bar.xaxis")
+                    .font(.subheadline.weight(.semibold))
+                NutritionRow(facts: perPersonPerDay)
+                Text("Per person, across \(days) planned day\(days == 1 ? "" : "s"). Estimated where a recipe doesn't declare values.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .glassCard(cornerRadius: 22)
+        }
+    }
+
     private func cook(_ entry: MealPlanEntry) {
         let shortfalls = viewModel.markCooked(entry, inventory: inventory)
         withAnimation {
-            toast = entry.batch != nil
+            toast = entry.isLeftover
                 ? "Enjoy the leftovers"
                 : (shortfalls.isEmpty
                     ? "Stock updated for \(entry.recipe?.name ?? "meal")"
@@ -480,19 +635,15 @@ struct NutritionRow: View {
 
 // MARK: - Meal card
 
-private struct MealCard: View {
+private struct MealCard<MenuContent: View>: View {
     let entry: MealPlanEntry
     let inventory: [Ingredient]
     let onCook: () -> Void
     let onUndoCook: () -> Void
-    let onMoveToTomorrow: () -> Void
-    let onMove: () -> Void
-    let onCopy: () -> Void
-    let onRepeat: () -> Void
-    let onDelete: () -> Void
+    @ViewBuilder let menu: () -> MenuContent
 
     private var missing: [PantryMatch] {
-        guard entry.batch == nil else { return [] }
+        guard !entry.isLeftover else { return [] }
         return PantryMatcher()
             .matches(requirements: MealPlanViewModel.requirements(for: [entry]), inventory: inventory)
             .filter { !$0.isInStock }
@@ -506,7 +657,7 @@ private struct MealCard: View {
                 }
             } label: {
                 HStack(spacing: 14) {
-                    IconTile(symbol: entry.batch != nil ? "takeoutbag.and.cup.and.straw.fill" : entry.mealType.symbol, tint: entry.mealType.tint, size: 42)
+                    IconTile(symbol: entry.isLeftover ? "takeoutbag.and.cup.and.straw.fill" : entry.mealType.symbol, tint: entry.mealType.tint, size: 42)
                     VStack(alignment: .leading, spacing: 6) {
                         Text(entry.recipe?.name ?? "Deleted recipe")
                             .font(.body.weight(.semibold))
@@ -514,9 +665,16 @@ private struct MealCard: View {
                             .strikethrough(entry.isCooked, color: .secondary)
                             .lineLimit(2)
                         HStack(spacing: 6) {
-                            Label("\(entry.servings)", systemImage: "person.2.fill")
+                            Label("\(entry.servingsEaten)", systemImage: "person.2.fill")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                            if entry.servingsEaten < entry.servings {
+                                Label("+\(entry.servings - entry.servingsEaten)", systemImage: "takeoutbag.and.cup.and.straw")
+                                    .font(.caption)
+                                    .foregroundStyle(.teal)
+                                    .fixedSize()
+                                    .accessibilityLabel("plus \(entry.servings - entry.servingsEaten) servings for leftovers")
+                            }
                             if let facts = entry.recipe?.nutritionPerServing {
                                 Text("\(Int(facts.calories.rounded())) kcal")
                                     .font(.caption)
@@ -534,7 +692,7 @@ private struct MealCard: View {
             Button {
                 entry.isCooked ? onUndoCook() : onCook()
             } label: {
-                Image(systemName: entry.isCooked ? "checkmark" : (entry.batch != nil ? "fork.knife" : "frying.pan"))
+                Image(systemName: entry.isCooked ? "checkmark" : (entry.isLeftover ? "fork.knife" : "frying.pan"))
                     .font(.body.weight(.semibold))
                     .frame(width: 28, height: 28)
             }
@@ -543,33 +701,234 @@ private struct MealCard: View {
             .accessibilityLabel(entry.isCooked ? "Mark as not cooked" : "Mark as cooked and use stock")
         }
         .glassCard(cornerRadius: 22)
-        .contextMenu {
-            if entry.isCooked {
-                Button("Mark as not cooked", systemImage: "arrow.uturn.backward", action: onUndoCook)
-            } else {
-                Button(entry.batch != nil ? "Eat leftovers" : "Cook & use stock", systemImage: "frying.pan", action: onCook)
-            }
-            Divider()
-            Button("Move to tomorrow", systemImage: "calendar.badge.plus", action: onMoveToTomorrow)
-            Button("Move to…", systemImage: "arrow.right.circle", action: onMove)
-            Button("Copy to…", systemImage: "doc.on.doc", action: onCopy)
-            Button("Repeat weekly (4 weeks)", systemImage: "repeat", action: onRepeat)
-            Divider()
-            Button("Remove from plan", systemImage: "trash", role: .destructive, action: onDelete)
-        }
+        .contextMenu { menu() }
     }
 
     @ViewBuilder
     private var statusBadge: some View {
         if entry.isCooked {
-            StatusBadge(text: entry.batch != nil ? "Eaten" : "Cooked", symbol: "checkmark", tint: .green)
-        } else if entry.batch != nil {
+            StatusBadge(text: entry.isLeftover ? "Eaten" : "Cooked", symbol: "checkmark", tint: .green)
+        } else if entry.isLeftover {
             StatusBadge(text: "Leftovers", symbol: "takeoutbag.and.cup.and.straw", tint: .teal)
         } else if missing.isEmpty {
             StatusBadge(text: "Ready", symbol: "checkmark.circle.fill", tint: .green)
         } else {
             StatusBadge(text: "Missing \(missing.count)", symbol: "cart", tint: .orange)
         }
+    }
+}
+
+// MARK: - Week grid
+
+enum PlanLayout: String, CaseIterable, Identifiable {
+    case day, week
+    var id: String { rawValue }
+    var title: String { self == .day ? "Day" : "Week" }
+}
+
+/// One day of the week grid: every meal slot, filled or empty. Empty slots add a meal;
+/// meals can be dragged between slots and days.
+private struct WeekDayCard<MenuContent: View>: View {
+    let day: Date
+    let entries: [MealPlanEntry]
+    let inventory: [Ingredient]
+    let onAdd: (MealType) -> Void
+    let onSelectDay: () -> Void
+    let onDrop: (String, MealType) -> Bool
+    @ViewBuilder let menu: (MealPlanEntry) -> MenuContent
+
+    /// Breakfast, lunch and dinner always show; snacks only when one is planned.
+    private var slots: [MealType] {
+        MealType.allCases.filter { $0 != .snack || entries.contains { $0.mealType == .snack } }
+    }
+
+    var body: some View {
+        let isToday = Calendar.current.isDateInToday(day)
+        VStack(alignment: .leading, spacing: 8) {
+            Button(action: onSelectDay) {
+                HStack(spacing: 6) {
+                    Text(day.formatted(.dateTime.weekday(.wide)))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(isToday ? Color.accentColor : .primary)
+                    Text(day.formatted(.dateTime.month(.abbreviated).day()))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Spacer(minLength: 0)
+                    if isToday { StatusBadge(text: "Today", tint: .accentColor) }
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Shows this day")
+
+            ForEach(slots) { mealType in
+                slot(mealType)
+            }
+        }
+        .glassCard(cornerRadius: 22)
+    }
+
+    @ViewBuilder
+    private func slot(_ mealType: MealType) -> some View {
+        let meals = entries.filter { $0.mealType == mealType }
+        VStack(alignment: .leading, spacing: 4) {
+            if meals.isEmpty {
+                Button { onAdd(mealType) } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: mealType.symbol)
+                            .foregroundStyle(mealType.tint.opacity(0.6))
+                            .frame(width: 20)
+                        Text("Add \(mealType.rawValue.lowercased())")
+                            .foregroundStyle(.secondary)
+                        Spacer(minLength: 0)
+                        Image(systemName: "plus")
+                            .foregroundStyle(.tertiary)
+                    }
+                    .font(.footnote)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+                    .background {
+                        RoundedRectangle(cornerRadius: 12)
+                            .strokeBorder(.secondary.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [5, 4]))
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
+            } else {
+                ForEach(meals) { entry in
+                    row(entry)
+                }
+            }
+        }
+        .dropDestination(for: String.self) { items, _ in
+            guard let id = items.first else { return false }
+            return onDrop(id, mealType)
+        }
+    }
+
+    private func row(_ entry: MealPlanEntry) -> some View {
+        NavigationLink {
+            if let recipe = entry.recipe {
+                RecipeDetailView(recipe: recipe, servings: entry.servings)
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: entry.isLeftover ? "takeoutbag.and.cup.and.straw.fill" : entry.mealType.symbol)
+                    .foregroundStyle(entry.mealType.tint)
+                    .frame(width: 20)
+                Text(entry.recipe?.name ?? "Deleted recipe")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(entry.isCooked ? .secondary : .primary)
+                    .strikethrough(entry.isCooked, color: .secondary)
+                    .lineLimit(1)
+                Spacer(minLength: 0)
+                if entry.isCooked {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                } else if entry.isLeftover {
+                    Text("Leftovers").font(.caption2).foregroundStyle(.teal)
+                } else if missingCount(entry) > 0 {
+                    Text("Missing \(missingCount(entry))").font(.caption2).foregroundStyle(.orange)
+                }
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 10)
+            .background(entry.mealType.tint.opacity(0.1), in: .rect(cornerRadius: 12))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .contextMenu { menu(entry) }
+        .draggable("\(entry.persistentModelID.hashValue)")
+    }
+
+    private func missingCount(_ entry: MealPlanEntry) -> Int {
+        PantryMatcher()
+            .matches(requirements: MealPlanViewModel.requirements(for: [entry]), inventory: inventory)
+            .filter { !$0.isInStock }
+            .count
+    }
+}
+
+// MARK: - Swap
+
+/// Ranked alternatives for one planned meal, scored like "Plan my week".
+struct SwapMealView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Query(sort: \Recipe.name) private var recipes: [Recipe]
+    @Query(sort: \Ingredient.name) private var inventory: [Ingredient]
+    @Query private var households: [Household]
+    @State private var settings = AppSettings.shared
+
+    let entry: MealPlanEntry
+    let weekStart: Date
+    let weekEntries: [MealPlanEntry]
+    let onSwap: (Recipe) -> Void
+
+    private var alternatives: [AutoPlanner.Proposal] {
+        let calendar = Calendar.current
+        let offset = calendar.dateComponents([.day], from: weekStart, to: entry.date).day ?? 0
+        let locked = weekEntries.compactMap { other -> (dayOffset: Int, mealType: MealType, recipe: Recipe)? in
+            guard other !== entry, let recipe = other.recipe, other.leftoverOf !== entry else { return nil }
+            return (calendar.dateComponents([.day], from: weekStart, to: other.date).day ?? 0, other.mealType, recipe)
+        }
+        let memberTags = households.first?.members.flatMap { member in
+            member.dietTags.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        } ?? []
+        let options = AutoPlanner.Options(
+            servingsPerMeal: Double(entry.servings),
+            dietTags: settings.dietTags + memberTags,
+            pantry: inventory,
+            prices: nil,
+            weeklyBudgetCents: 0,
+            excludeRecipeNames: Set([entry.recipe?.name].compactMap { $0 }),
+            locked: locked
+        )
+        let slot = AutoPlanner.Slot(dayOffset: offset, mealType: entry.mealType, maxMinutes: entry.mealType == .lunch ? 20 : nil)
+        return AutoPlanner().alternatives(for: slot, recipes: recipes, options: options)
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    if alternatives.isEmpty {
+                        ContentUnavailableView("No other recipes", systemImage: "book.closed", description: Text("Save more recipes to swap this meal."))
+                    }
+                    ForEach(alternatives, id: \.recipe.persistentModelID) { proposal in
+                        Button {
+                            onSwap(proposal.recipe)
+                            dismiss()
+                        } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(proposal.recipe.name)
+                                    .font(.body.weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                if !proposal.reasons.isEmpty {
+                                    Text(proposal.reasons.joined(separator: " · "))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } header: {
+                    Text("Instead of \(entry.recipe?.name ?? "this meal")")
+                } footer: {
+                    Text("Ranked by what's in your pantry, ingredients shared with this week's plan and cooking time.")
+                }
+            }
+            .navigationTitle("Swap \(entry.mealType.rawValue.lowercased())")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }
 
@@ -631,6 +990,8 @@ struct AddMealView: View {
     @State private var searchText = ""
     @State private var showingNewRecipe = false
     @State private var didSetDefaultServings = false
+    @State private var cookExtra = false
+    @State private var extraServings = 2
 
     /// Meals already planned this week, used to favour recipes that share ingredients.
     var weekEntries: [MealPlanEntry] = []
@@ -689,6 +1050,21 @@ struct AddMealView: View {
                     }
                 }
 
+                if mealType == .dinner || mealType == .lunch {
+                    Section {
+                        Toggle("Cook extra for tomorrow's lunch", isOn: $cookExtra.animation())
+                        if cookExtra {
+                            Stepper(value: $extraServings, in: 1...12) {
+                                LabeledContent("Extra servings", value: "\(extraServings)")
+                            }
+                        }
+                    } footer: {
+                        if cookExtra {
+                            Text("Cooks \(servings + extraServings) servings and plans \(extraServings) as leftovers for \((Calendar.current.date(byAdding: .day, value: 1, to: date) ?? date).formatted(.dateTime.weekday(.wide))) lunch. Ingredients are bought and used once.")
+                        }
+                    }
+                }
+
                 Section {
                     if recipes.isEmpty {
                         ContentUnavailableView {
@@ -722,8 +1098,11 @@ struct AddMealView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add", systemImage: "checkmark", role: .confirm) {
                         guard let selectedRecipe else { return }
-                        MealPlanViewModel(modelContext: modelContext)
-                            .addMeal(recipe: selectedRecipe, on: date, mealType: mealType, servings: servings)
+                        let viewModel = MealPlanViewModel(modelContext: modelContext)
+                        let entry = viewModel.addMeal(recipe: selectedRecipe, on: date, mealType: mealType, servings: servings)
+                        if cookExtra && (mealType == .dinner || mealType == .lunch) {
+                            viewModel.planLeftovers(of: entry, extraServings: extraServings)
+                        }
                         dismiss()
                     }
                     .disabled(selectedRecipe == nil)
@@ -736,6 +1115,7 @@ struct AddMealView: View {
                 guard !didSetDefaultServings, let household = households.first, !household.members.isEmpty else { return }
                 didSetDefaultServings = true
                 servings = max(Int(household.servingsPerMeal.rounded(.up)), 1)
+                extraServings = servings
             }
         }
         .presentationDetents([.large])

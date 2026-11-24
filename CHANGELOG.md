@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.0 (1) — unreleased
+
+Changes since 1.1.2 (3).
+
+### New
+- **Week view.** A Day/Week switch on the Plan tab. Week shows every day's breakfast, lunch and dinner at once (snacks when planned), with empty slots you tap to fill and meals you drag between days and slots. On iPad and the open iPhone Duo the days sit side by side.
+- **Plan leftovers.** "Cook extra for tomorrow's lunch" when adding a lunch or dinner, or from a planned meal's menu. The extra servings are added to that meal, so ingredients are bought and used once, and a linked leftovers lunch is planned for the next day. Removing the leftovers gives the servings back; removing the meal removes its leftovers.
+- **Swap a meal.** "Swap for another recipe" on any planned meal lists the best alternatives for that slot (pantry, shared ingredients, cooking time) and replaces it in one tap. Planned leftovers follow the new recipe.
+- **Dinners left to plan.** A nudge lists this week's days without a dinner and opens the first one.
+- **Weekly nutrition.** Week view shows a per-person daily average across the planned days.
+
+### Fixed
+- "Plan my week for me" now fills every slot. With fewer recipes than slots (for example the 10 sample recipes and 12 slots), the last slots, usually the weekend dinners, were silently left out; recipes now repeat once every one has been used, kept off neighbouring days.
+- "Plan my week for me" shares the weekly budget across the week instead of giving every slot the whole budget.
+- Nutrition counts servings cooked for leftovers on the day they're eaten, not twice.
+
 ## 1.1.2 (3) — 2026-11-22
 
 Changes since 1.1.1 (3). Build 3 replaces builds 1 and 2 (see "Build 2" and "Build 3" below).

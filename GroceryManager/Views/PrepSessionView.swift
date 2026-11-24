@@ -21,7 +21,7 @@ struct PrepSessionView: View {
     @State private var toast: String?
 
     private var includedEntries: [MealPlanEntry] {
-        entries.filter { !$0.isCooked && $0.batch == nil && $0.recipe != nil }
+        entries.filter { !$0.isCooked && $0.batch == nil && $0.leftoverOf == nil && $0.recipe != nil }
     }
 
     var body: some View {

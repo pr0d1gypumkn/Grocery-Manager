@@ -40,6 +40,7 @@
 		A1000000000000000000001E /* MealPrepPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001E /* MealPrepPlanner.swift */; };
 		A1000000000000000000001F /* MealPrepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000000000000000000001F /* MealPrepView.swift */; };
 		A10000000000000000000020 /* MealPrepPlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000020 /* MealPrepPlannerTests.swift */; };
+		A7D3E1F2A4B5C6D7E8F90A11 /* WeeklyPlanningTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D3E1F2A4B5C6D7E8F90A11 /* WeeklyPlanningTests.swift */; };
 		A718D1B145E8A7490210D79D /* UnitConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F718D1B145E8A7490210D79D /* UnitConversionTests.swift */; };
 		A71DC34DABC5A10A4A774A3E /* PrepSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71DC34DABC5A10A4A774A3E /* PrepSessionView.swift */; };
 		A72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift */; };
@@ -126,6 +127,7 @@
 		B1000000000000000000001F /* MealPrepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPrepView.swift; sourceTree = "<group>"; };
 		B10000000000000000000020 /* MealPrepPlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPrepPlannerTests.swift; sourceTree = "<group>"; };
 		F7000000000000000000SK01 /* Mealy.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Mealy.storekit; sourceTree = "<group>"; };
+		F7D3E1F2A4B5C6D7E8F90A11 /* WeeklyPlanningTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyPlanningTests.swift; sourceTree = "<group>"; };
 		F718D1B145E8A7490210D79D /* UnitConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitConversionTests.swift; sourceTree = "<group>"; };
 		F71DC34DABC5A10A4A774A3E /* PrepSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepSessionView.swift; sourceTree = "<group>"; };
 		F72236E3580E25F7F50C5BAB /* SocialRecipeImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialRecipeImporter.swift; sourceTree = "<group>"; };
@@ -318,6 +320,7 @@
 				F78C4F827A4514767FEAB90C /* PantryDeductionTests.swift */,
 				F7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift */,
 				F718D1B145E8A7490210D79D /* UnitConversionTests.swift */,
+				F7D3E1F2A4B5C6D7E8F90A11 /* WeeklyPlanningTests.swift */,
 				B10000000000000000000009 /* ExpiryNotificationPlannerTests.swift */,
 				B10000000000000000000020 /* MealPrepPlannerTests.swift */,
 			);
@@ -488,6 +491,7 @@
 				A78C4F827A4514767FEAB90C /* PantryDeductionTests.swift in Sources */,
 				A7C8B112DDF24C80D88FA603 /* IngredientMergingTests.swift in Sources */,
 				A718D1B145E8A7490210D79D /* UnitConversionTests.swift in Sources */,
+				A7D3E1F2A4B5C6D7E8F90A11 /* WeeklyPlanningTests.swift in Sources */,
 				A10000000000000000000009 /* ExpiryNotificationPlannerTests.swift in Sources */,
 				A10000000000000000000020 /* MealPrepPlannerTests.swift in Sources */,
 			);
@@ -592,7 +596,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = GroceryManager/GroceryManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UF77TH29VG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GroceryManager/Info.plist;
@@ -603,7 +607,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.2.0;
 				MEALY_API_BASE_URL = "https:/$()/mealy.pumpkinpatch.work";
 				PRODUCT_BUNDLE_IDENTIFIER = work.pumpkinpatch.mealy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -622,7 +626,7 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = GroceryManager/GroceryManager.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = UF77TH29VG;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = GroceryManager/Info.plist;
@@ -633,7 +637,7 @@
 				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
-				MARKETING_VERSION = 1.1.2;
+				MARKETING_VERSION = 1.2.0;
 				MEALY_API_BASE_URL = "https:/$()/mealy.pumpkinpatch.work";
 				PRODUCT_BUNDLE_IDENTIFIER = work.pumpkinpatch.mealy;
 				PRODUCT_NAME = "$(TARGET_NAME)";

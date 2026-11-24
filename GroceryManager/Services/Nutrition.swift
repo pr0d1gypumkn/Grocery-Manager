@@ -104,10 +104,16 @@ extension Recipe {
 }
 
 extension MealPlanEntry {
-    /// Nutrition for everything on the plate(s) in this entry.
+    /// Nutrition for everything on the plate(s) in this entry. Servings cooked for planned
+    /// leftovers are eaten (and counted) on the leftovers meal, not here.
     var nutrition: NutritionFacts? {
         guard let perServing = recipe?.nutritionPerServing else { return nil }
-        return perServing * Double(servings)
+        return perServing * Double(servingsEaten)
+    }
+
+    /// Servings eaten at this meal: the extra cooked for planned leftovers is eaten later.
+    var servingsEaten: Int {
+        max(servings - plannedLeftovers.reduce(0) { $0 + $1.servings }, 0)
     }
 }
 
