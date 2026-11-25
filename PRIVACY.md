@@ -35,7 +35,6 @@ While you're signed in, a few Plus features ask our server for help:
 
 - Recipe ideas send the names of your saved recipes, pantry items and diet preferences.
 - Social import sends the post's link.
-- Grocery checkout sends the names and amounts on your list.
 
 These are used only to answer that request and aren't stored.
 

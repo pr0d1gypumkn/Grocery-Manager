@@ -38,6 +38,7 @@ enum LocationShelfLayout {
 
 struct LocationListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \StorageLocation.name) private var locations: [StorageLocation]
     @Query(sort: \Ingredient.name) private var ingredients: [Ingredient]
     @State private var showingAddLocation = false
@@ -48,59 +49,30 @@ struct LocationListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: gridColumnCount), spacing: 16) {
-                if locations.isEmpty && unassignedIngredients.isEmpty {
-                    ContentUnavailableView("No storage locations", systemImage: "archivebox", description: Text("Create a fridge, pantry, or cabinet to organize groceries."))
-                        .frame(maxWidth: .infinity, minHeight: 200)
-                        .gridCellColumns(1)
-                        .gridCellUnsizedAxes(.horizontal)
-                } else {
-                    ForEach(locations) { location in
-                        NavigationLink {
-                            LocationDetailView(location: location)
-                        } label: {
-                            locationTile(for: location)
-                        }
-                        .buttonStyle(.plain)
-                        .contextMenu {
-                            Button("Delete", systemImage: "trash", role: .destructive) {
-                                modelContext.delete(location)
-                                try? modelContext.save()
+            Group {
+            if locations.isEmpty && unassignedIngredients.isEmpty {
+                ContentUnavailableView("No storage locations", systemImage: "archivebox", description: Text("Create a fridge, pantry, or cabinet to organize groceries."))
+                    .frame(maxWidth: .infinity, minHeight: 200)
+            } else {
+                // Masonry: each column stacks independently so a short card
+                // (e.g. a freezer with two items) doesn't leave a row-sized gap.
+                HStack(alignment: .top, spacing: 16) {
+                    ForEach(Array(masonryColumns.enumerated()), id: \.offset) { index, column in
+                        VStack(spacing: 16) {
+                            ForEach(column) { location in
+                                locationLink(for: location)
+                            }
+                            if index == unassignedColumnIndex && !unassignedIngredients.isEmpty {
+                                unassignedSection
                             }
                         }
-                    }
-
-                    if !unassignedIngredients.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Unassigned")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-
-                            ForEach(unassignedIngredients) { ingredient in
-                                NavigationLink {
-                                    IngredientFormView(ingredient: ingredient)
-                                } label: {
-                                    HStack {
-                                        Image(systemName: "questionmark.folder")
-                                            .foregroundStyle(.secondary)
-                                        VStack(alignment: .leading) {
-                                            Text(ingredient.name)
-                                            Text(ingredient.quantity.quantityText(unit: ingredient.unit))
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        Spacer()
-                                    }
-                                    .padding(12)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 16))
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                        .gridCellColumns(1)
+                        // Keep cards at their natural height; otherwise the shorter
+                        // column's cards stretch to match the taller column.
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .top)
                     }
                 }
+            }
             }
             .padding()
         }
@@ -121,9 +93,75 @@ struct LocationListView: View {
         }
     }
 
+    /// Splits locations into `gridColumnCount` columns, always adding the next
+    /// card to the column with the least estimated height.
+    private var masonryColumns: [[StorageLocation]] {
+        var columns = Array(repeating: [StorageLocation](), count: gridColumnCount)
+        var heights = Array(repeating: 0, count: gridColumnCount)
+        for location in locations {
+            let target = heights.indices.min { heights[$0] < heights[$1] } ?? 0
+            columns[target].append(location)
+            // Header plus one row per two items (empty slot counts as an item).
+            heights[target] += 1 + (location.ingredients.count + 2) / 2
+        }
+        return columns
+    }
+
+    /// The unassigned list goes at the bottom of the shortest column.
+    private var unassignedColumnIndex: Int {
+        let columns = masonryColumns
+        let heights = columns.map { $0.reduce(0) { $0 + 1 + ($1.ingredients.count + 2) / 2 } }
+        return heights.indices.min { heights[$0] < heights[$1] } ?? 0
+    }
+
+    private func locationLink(for location: StorageLocation) -> some View {
+        NavigationLink {
+            LocationDetailView(location: location)
+        } label: {
+            locationTile(for: location)
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button("Delete", systemImage: "trash", role: .destructive) {
+                modelContext.delete(location)
+                try? modelContext.save()
+            }
+        }
+    }
+
+    private var unassignedSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Unassigned")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+
+            ForEach(unassignedIngredients) { ingredient in
+                NavigationLink {
+                    IngredientFormView(ingredient: ingredient)
+                } label: {
+                    HStack {
+                        Image(systemName: "questionmark.folder")
+                            .foregroundStyle(.secondary)
+                        VStack(alignment: .leading) {
+                            Text(ingredient.name)
+                            Text(ingredient.quantity.quantityText(unit: ingredient.unit))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 16))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
     private var gridColumnCount: Int {
         #if os(iOS)
-        return UIDevice.current.userInterfaceIdiom == .pad ? 2 : 1
+        return horizontalSizeClass == .regular ? 2 : 1
         #else
         return 1
         #endif

@@ -36,7 +36,6 @@ export default function PrivacyPage() {
       <ul>
         <li>Recipe ideas send the names of your saved recipes, pantry items and diet preferences.</li>
         <li>Social import sends the post&apos;s link.</li>
-        <li>Grocery checkout sends the names and amounts on your list.</li>
       </ul>
       <p>These are used only to answer that request and aren&apos;t stored.</p>
 
