@@ -120,7 +120,7 @@ enum HTMLFetcher {
 /// every device), with the on-device language model as the fallback for pages without it.
 struct RecipeWebImporter {
     var fallback: (String) async throws -> ImportedRecipeDraft = { text in
-        try await OnDeviceRecipeImporter().importRecipe(from: .note(text))
+        try await OnDeviceRecipeImporter().importRecipe(from: .note(text), isPageText: true)
     }
 
     func importRecipe(from url: URL) async throws -> ImportedRecipeDraft {
