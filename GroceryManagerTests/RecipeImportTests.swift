@@ -147,4 +147,59 @@ final class RecipeImportTests: XCTestCase {
         XCTAssertEqual(estimate.facts.calories, 330 + 884 * 0.135 + 143, accuracy: 3)
         XCTAssertEqual(estimate.facts.protein, 62 + 13, accuracy: 1)
     }
+
+    // MARK: Plain-text fallback (no Apple Intelligence)
+
+    func testPlainTextParsesHeadedRecipe() throws {
+        let note = """
+        Lemon Garlic Chicken
+        Serves 4
+
+        Ingredients:
+        - 900 g chicken thighs
+        - 2 lemons
+        - 4 cloves garlic, minced
+
+        Method
+        1. Preheat the oven to 425°F.
+        2. Toss the chicken with lemon juice and garlic.
+        3. Roast for 30 minutes.
+        """
+        let draft = try XCTUnwrap(PlainTextRecipeParser.parse(note))
+        XCTAssertEqual(draft.name, "Lemon Garlic Chicken")
+        XCTAssertEqual(draft.servings, 4)
+        XCTAssertEqual(draft.ingredients.map(\.name), ["chicken thighs", "lemons", "garlic"])
+        XCTAssertEqual(draft.ingredients.first?.quantity, 900)
+        XCTAssertEqual(draft.ingredients.first?.unit, "g")
+        XCTAssertEqual(draft.instructions, "1. Preheat the oven to 425°F.\n2. Toss the chicken with lemon juice and garlic.\n3. Roast for 30 minutes.")
+    }
+
+    func testPlainTextParsesUnheadedNote() throws {
+        let note = """
+        Overnight oats
+        1 cup rolled oats
+        1 cup milk
+        ½ cup greek yogurt
+        Stir everything together in a jar and leave it in the fridge overnight.
+        """
+        let draft = try XCTUnwrap(PlainTextRecipeParser.parse(note))
+        XCTAssertEqual(draft.name, "Overnight oats")
+        XCTAssertEqual(draft.ingredients.count, 3)
+        XCTAssertEqual(draft.instructions, "Stir everything together in a jar and leave it in the fridge overnight.")
+    }
+
+    func testPlainTextSplitsInlineCaptionBullets() throws {
+        let caption = "Easy pancakes 🥞 Ingredients • 1 cup flour • 2 eggs • 1 cup milk"
+        let draft = try XCTUnwrap(PlainTextRecipeParser.parse(caption))
+        XCTAssertEqual(draft.ingredients.map(\.name), ["flour", "eggs", "milk"])
+    }
+
+    func testPageTextNeedsAnIngredientsHeading() {
+        let page = "Home\nAbout\n2 comments\n12 recipes you'll love this week and why they are worth making again."
+        XCTAssertNil(PlainTextRecipeParser.parse(page, requireSections: true))
+    }
+
+    func testTextWithoutRecipeIsRejected() {
+        XCTAssertNil(PlainTextRecipeParser.parse("Just a thought"))
+    }
 }

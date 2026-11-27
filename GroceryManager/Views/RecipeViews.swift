@@ -333,9 +333,11 @@ struct RecipeImportView: View {
 
     private var footerText: String {
         switch sourceKind {
-        case .note: "Paste any recipe text. Parsed on-device with Apple Intelligence."
+        case .note: OnDeviceRecipeImporter.isModelAvailable
+            ? "Paste any recipe text. Parsed on-device with Apple Intelligence."
+            : "Paste any recipe text, ideally with \"Ingredients\" and \"Method\" headings. Parsed on-device."
         case .url: "Works with any site that publishes standard recipe markup, and falls back to on-device parsing."
-        case .social: "Reads the post's embedded recipe or caption. Platforms without partner access fall back to the caption and on-device parsing."
+        case .social: "Reads the recipe from the post's description or caption, on-device."
         case .photo: "Screenshots, cookbook pages and handwritten cards are read on-device with Vision, then parsed."
         }
     }
