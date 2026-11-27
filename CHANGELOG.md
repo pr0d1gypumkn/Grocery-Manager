@@ -15,6 +15,7 @@ Changes since 1.1.2 (4).
 - "Plan my week for me" now fills every slot. With fewer recipes than slots (for example the 10 sample recipes and 12 slots), the last slots, usually the weekend dinners, were silently left out; recipes now repeat once every one has been used, kept off neighbouring days.
 - "Plan my week for me" shares the weekly budget across the week instead of giving every slot the whole budget.
 - Nutrition counts servings cooked for leftovers on the day they're eaten, not twice.
+- Ingredient names with a preparation word ("diced carrots", "sliced mushrooms") match the plain ingredient on every device. On some devices the word wasn't dropped, so the grocery list, pantry and batch prep treated them as different items; saved names are re-indexed on launch.
 
 ## 1.1.2 (4) — 2026-11-26
 

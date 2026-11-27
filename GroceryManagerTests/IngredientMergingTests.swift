@@ -35,6 +35,15 @@ final class IngredientMergingTests: XCTestCase {
         XCTAssertFalse(IngredientNameMatcher.matches("green onion", "onion"))
     }
 
+    func testPreparationWordsDroppedWhateverTheLemma() {
+        // NLTagger may or may not lemmatise these ("diced" → "dice"); the key must not change.
+        XCTAssertEqual(IngredientNameMatcher.key("Diced Carrots"), "carrot")
+        XCTAssertEqual(IngredientNameMatcher.key("frozen peas"), "pea")
+        XCTAssertEqual(IngredientNameMatcher.key("sliced mushrooms"), "mushroom")
+        // A noun that shares a lemma with a preparation verb stays.
+        XCTAssertEqual(IngredientNameMatcher.key("pork chops"), "pork chop")
+    }
+
     func testGroceryLinesSkipStockAndSortByAisle() {
         let inventory = [
             Ingredient(name: "Rice", quantity: 1, unit: "kg", category: "Pantry", expiryDate: .distantFuture),
