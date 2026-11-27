@@ -1,10 +1,10 @@
-# App Review notes for 1.1.2 (4)
+# App Review notes for 1.1.2 (5)
 
 App Review replied to 1.1.2 (3) with **Guideline 2.1 - Information Needed**. This was a request for more information, not a reported bug. They asked for six things in the Notes field of **App Review Information**, plus a screen recording.
 
 1. Paste the block under "Notes" into **App Store Connect › App Store › 1.1.2 › App Review Information › Notes**. It is under the 4,000-character limit.
 2. Record the video using "Screen recording" below. Attach it in the **Attachment** field of the same section. If it's too big, upload it somewhere that needs no sign-in and put the link where the notes say.
-3. Pick build 4. It also fixes recipe import on devices without Apple Intelligence.
+3. Pick build 5. It fixes recipe import on devices without Apple Intelligence (build 4) and ingredient matching for names like "diced carrots" (build 5).
 4. Make sure both Plus subscriptions are attached to this version, under **In-App Purchases and Subscriptions** on the version page.
 5. Resubmit.
 
@@ -52,7 +52,7 @@ Not applicable. Mealy is not in a regulated industry and ships no licensed third
 Apple asked for a recording made on a **physical device** running the latest iOS, **starting from launch**. Record on your iPhone with Control Center › Screen Recording. About 3–4 minutes is enough. Don't narrate; tapping slowly is better.
 
 **Before recording:**
-- Delete Mealy from the iPhone, then install build 4 from TestFlight so the first launch loads the sample data.
+- Delete Mealy from the iPhone, then install build 5 from TestFlight so the first launch loads the sample data.
 - Settings › App Store › Sandbox Account: sign in with a sandbox tester so the purchase is free. TestFlight purchases also use the sandbox.
 - For the household step, have a second device or a second Apple Account ready, or show only the invite code (see step 8).
 - Turn on Do Not Disturb.

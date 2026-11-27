@@ -322,11 +322,13 @@ enum LemmaIndexer {
         recipes.values.forEach(refresh)
     }
 
-    /// Rows synced from older app versions or created before these fields existed.
+    /// Rows synced from older app versions, created before these fields existed, or stored
+    /// with a key from an older matcher. Every key is recomputed; `refresh` only writes the
+    /// ones that changed.
     static func backfill(_ context: ModelContext) {
-        let ingredients = (try? context.fetch(FetchDescriptor<Ingredient>(predicate: #Predicate { $0.lemmaName == "" }))) ?? []
+        let ingredients = (try? context.fetch(FetchDescriptor<Ingredient>())) ?? []
         ingredients.forEach(refresh)
-        let recipeIngredients = (try? context.fetch(FetchDescriptor<RecipeIngredient>(predicate: #Predicate { $0.lemmaName == "" }))) ?? []
+        let recipeIngredients = (try? context.fetch(FetchDescriptor<RecipeIngredient>())) ?? []
         recipeIngredients.forEach(refresh)
         let recipes = (try? context.fetch(FetchDescriptor<Recipe>())) ?? []
         recipes.forEach(refresh)

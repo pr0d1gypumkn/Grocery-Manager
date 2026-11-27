@@ -111,30 +111,36 @@ enum IngredientNameMatcher {
     }
 
     static func key(_ name: String) -> String {
-        lemmaTokens(name)
-            .filter { !preparationWords.contains($0) }
+        // Preparation words are matched on the word as written: whether NLTagger lemmatises
+        // "diced" to "dice" depends on the device's language assets, and filtering only the
+        // lemma would also drop real nouns that share it ("pork chops").
+        tokenize(name)
+            .filter { !preparationWords.contains($0.word) && !preparationWords.contains($0.lemma) }
+            .flatMap { expand($0.lemma) }
             .joined(separator: " ")
     }
 
     /// Lemmatised, alias-resolved tokens of any text (an ingredient name or a whole recipe
     /// step), without dropping preparation words. Multi-word aliases expand to several tokens.
     static func lemmaTokens(_ text: String) -> [String] {
-        tokenize(text).flatMap { token in
-            (aliases[token] ?? token).split(separator: " ").map(String.init)
-        }
+        tokenize(text).flatMap { expand($0.lemma) }
     }
 
-    private static func tokenize(_ name: String) -> [String] {
+    private static func expand(_ lemma: String) -> [String] {
+        (aliases[lemma] ?? lemma).split(separator: " ").map(String.init)
+    }
+
+    private static func tokenize(_ name: String) -> [(word: String, lemma: String)] {
         let normalized = name.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
         let tagger = NLTagger(tagSchemes: [.lemma])
         tagger.string = normalized
 
-        var tokens: [String] = []
+        var tokens: [(word: String, lemma: String)] = []
         let fullRange = normalized.startIndex..<normalized.endIndex
         tagger.enumerateTags(in: fullRange, unit: .word, scheme: .lemma, options: [.omitWhitespace, .omitPunctuation]) { tag, tokenRange in
             let token = String(normalized[tokenRange]).lowercased()
             let lemma = tag?.rawValue.lowercased() ?? token
-            tokens.append(stem(lemma))
+            tokens.append((token, stem(lemma)))
             return true
         }
         return tokens
