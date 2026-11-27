@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.1.2 (4) — 2026-11-26
+## 1.1.2 (5) — 2026-11-27
 
-Changes since 1.1.1 (3). Build 4 replaces builds 1–3 (see "Build 2", "Build 3" and "Build 4" below). Build 3 was rejected by App Review under Guideline 2.1 (App Completeness).
+Changes since 1.1.1 (3). Build 5 replaces builds 1–4 (see "Build 2" to "Build 5" below). Build 3 was rejected by App Review under Guideline 2.1 (App Completeness).
 
 ### New
 - **Household sharing is live.** The app now connects to the Mealy server (mealy.pumpkinpatch.work), so Plus subscribers can share plans, lists and the pantry with their household. Subscribers are signed in automatically from their purchase; household members join with Sign in with Apple.
@@ -48,3 +48,6 @@ Changes since 1.1.1 (3). Build 4 replaces builds 1–3 (see "Build 2", "Build 3"
 ### Build 4
 - Recipe import works on devices without Apple Intelligence (or while its model is still downloading). Pasted notes, photos, social captions and websites without recipe markup used to stop with "Apple Intelligence is unavailable"; they now fall back to an on-device text parser that reads the title, servings, ingredients and steps.
 - The Note import footer no longer promises Apple Intelligence on devices that don't have it, and the Social footer no longer mentions partner access.
+
+### Build 5
+- Ingredient names with a preparation word ("diced carrots", "sliced mushrooms") match the plain ingredient on every device. On some devices the word wasn't dropped, so the grocery list, pantry and batch prep treated them as different items; saved names are re-indexed on launch.

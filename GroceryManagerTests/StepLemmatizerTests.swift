@@ -35,6 +35,19 @@ final class StepLemmatizerTests: XCTestCase {
     }
 
     @MainActor
+    func testBackfillRepairsStaleKeys() throws {
+        let container = try PersistenceController.makeInMemoryContainer()
+        let context = container.mainContext
+        let stock = Ingredient(name: "Diced Carrots")
+        context.insert(stock)
+        stock.lemmaName = "dice carrot"
+        try context.save()
+
+        LemmaIndexer.backfill(context)
+        XCTAssertEqual(stock.lemmaName, "carrot")
+    }
+
+    @MainActor
     func testLemmasAreStoredOnSave() throws {
         let container = try PersistenceController.makeInMemoryContainer()
         LemmaIndexer.install(on: container)
